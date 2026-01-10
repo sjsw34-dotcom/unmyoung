@@ -7,6 +7,10 @@ import { useEffect, useRef, useState } from "react";
 
 const CHAT_URL = "http://pf.kakao.com/_fECQn"; // 운명테라피 카카오톡 채널
 
+// 환경 변수는 파일 최상단에서 상수로 선언 (빌드 시 인라인됨)
+const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
 // 스크롤 애니메이션을 위한 커스텀 훅
 function useFadeIn() {
   const [isVisible, setIsVisible] = useState(false);
@@ -238,8 +242,7 @@ function OrderModal({
       // 토스페이먼츠 결제 위젯 로드
       const { loadTossPayments } = await import('@tosspayments/payment-sdk');
       
-      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
-      const tossPayments = await loadTossPayments(clientKey);
+      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
 
       // 주문 ID 생성 (고유값)
       const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
@@ -249,7 +252,8 @@ function OrderModal({
 
       // 결제 요청
       // 환경 변수에서 앱 URL 가져오기 (프로덕션), 없으면 현재 도메인 사용 (개발)
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+      // window.location.origin은 런타임에만 사용 가능하므로 함수 내에서 처리
+      const appUrl = APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
       
       await tossPayments.requestPayment('카드', {
         amount,
