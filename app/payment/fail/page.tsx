@@ -1,6 +1,12 @@
 // 서버 컴포넌트 래퍼 - 동적 렌더링 강제
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
+export const revalidate = 0;
+
+// 정적 경로 생성을 완전히 비활성화
+export function generateStaticParams() {
+  return [];
+}
 
 import { Suspense } from 'react';
 import PaymentFailClient from './client';
