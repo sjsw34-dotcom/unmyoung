@@ -4,9 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 
-// 동적 렌더링 강제 (빌드 시 pre-rendering 방지)
-export const dynamic = 'force-dynamic';
-
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const [isConfirming, setIsConfirming] = useState(true);

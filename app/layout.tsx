@@ -49,6 +49,9 @@ export const viewport = {
   themeColor: "#07080b",
 };
 
+// 동적 렌더링 강제 (payment 페이지용)
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
   children,
 }: Readonly<{

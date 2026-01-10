@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 // 동적 렌더링 강제 (빌드 시 pre-rendering 방지)
-export const dynamic = 'force-dynamic';
+// 클라이언트 컴포넌트에서는 page.tsx의 segment config를 사용할 수 없으므로
+// route segment config는 루트 레벨에서 설정
 
 function PaymentFailContent() {
   const searchParams = useSearchParams();
