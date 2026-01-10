@@ -112,13 +112,19 @@ vercel --prod
    - "Import" 클릭
 
 3. **환경변수 설정**
-   - "Environment Variables" 탭 클릭
-   - 다음 변수 추가:
+   - "Settings" → "Environment Variables" 클릭
+   - 다음 변수 추가 (Production, Preview, Development 모두 선택):
      ```
-     NEXT_PUBLIC_TOSS_CLIENT_KEY = test_ck_...
-     TOSS_SECRET_KEY = test_sk_...
-     NEXT_PUBLIC_APP_URL = https://your-project.vercel.app
+     Key: NEXT_PUBLIC_TOSS_CLIENT_KEY
+     Value: test_ck_xxxxxxxxxxxxxxxxxxxxxxxx
+     
+     Key: TOSS_SECRET_KEY
+     Value: test_sk_xxxxxxxxxxxxxxxxxxxxxxxx
+     
+     Key: NEXT_PUBLIC_APP_URL
+     Value: https://unmyoung.vercel.app (배포 후 실제 URL로 변경)
      ```
+   - 각 변수 추가 후 "Save" 클릭
 
 4. **배포 완료**
    - "Deploy" 클릭
@@ -129,14 +135,51 @@ vercel --prod
 
 ## 🎯 배포 후 작업
 
-### 1. 토스페이먼츠 가맹점 신청
+### 1. Vercel 배포 URL 확인 및 환경변수 업데이트
 
-이제 URL이 있으니 가맹점 신청 가능:
+1. **배포 완료 확인**
+   - Vercel 대시보드에서 배포 완료 확인
+   - 배포된 URL 확인 (예: `https://unmyoung-xxx.vercel.app` 또는 커스텀 도메인)
+
+2. **환경변수 업데이트**
+   - Vercel 대시보드 → 프로젝트 → Settings → Environment Variables
+   - `NEXT_PUBLIC_APP_URL` 값을 실제 배포 URL로 업데이트:
+     ```
+     Key: NEXT_PUBLIC_APP_URL
+     Value: https://unmyoung-xxx.vercel.app (실제 배포 URL)
+     ```
+   - "Save" 클릭
+   - 자동으로 재배포됨
+
+### 2. 토스페이먼츠 Redirect URL 등록
+
+1. **토스페이먼츠 개발자센터 접속**
+   - https://developers.tosspayments.com 접속
+   - 로그인
+
+2. **내 애플리케이션 → 설정**
+   - "내 애플리케이션" 메뉴 클릭
+   - 해당 애플리케이션 선택
+   - "결제위젯" 또는 "리다이렉트 URL" 메뉴 클릭
+
+3. **Redirect URL 등록**
+   - 다음 URL들을 등록:
+     ```
+     https://unmyoung-xxx.vercel.app/payment/success
+     https://unmyoung-xxx.vercel.app/payment/fail
+     ```
+   - 또는 와일드카드 사용:
+     ```
+     https://unmyoung-xxx.vercel.app/payment/*
+     ```
+   - "저장" 클릭
+
+### 3. 토스페이먼츠 가맹점 신청 (실제 결제 가능하게 하려면)
 
 1. **토스페이먼츠 가맹점 신청**
    - https://www.tosspayments.com 접속
    - "가맹점 신청" 클릭
-   - 배포된 URL 입력: `https://unmyoung.vercel.app`
+   - 배포된 URL 입력: `https://unmyoung-xxx.vercel.app`
    - 사업자 정보 입력
 
 2. **승인 대기** (보통 1~3일)

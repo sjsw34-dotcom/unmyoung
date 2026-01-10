@@ -248,14 +248,17 @@ function OrderModal({
       const amount = parseInt(pkg.price.replace(/,|원/g, ''));
 
       // 결제 요청
+      // 환경 변수에서 앱 URL 가져오기 (프로덕션), 없으면 현재 도메인 사용 (개발)
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+      
       await tossPayments.requestPayment('카드', {
         amount,
         orderId,
         orderName: pkg.name,
         customerName: formData.name,
         customerEmail: formData.email,
-        successUrl: `${window.location.origin}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
-        failUrl: `${window.location.origin}/payment/fail`,
+        successUrl: `${appUrl}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
+        failUrl: `${appUrl}/payment/fail`,
       });
 
     } catch (error) {
