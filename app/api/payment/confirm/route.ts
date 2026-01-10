@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,6 +22,11 @@ export async function POST(request: NextRequest) {
         { success: false, message: '필수 파라미터가 누락되었습니다.' },
         { status: 400 }
       );
+    }
+
+    // Supabase 연결 확인
+    if (!supabaseAdmin) {
+      console.warn('⚠️ Supabase가 설정되지 않았습니다. DB 저장 건너뜀.');
     }
 
     // 토스페이먼츠 시크릿 키
@@ -47,6 +53,27 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       console.error('토스페이먼츠 승인 실패:', data);
+      
+      // 실패 정보도 DB에 저장 (추적용)
+      if (supabaseAdmin) {
+        try {
+          await supabaseAdmin.from('orders').insert({
+            order_id: orderId,
+            amount: parseInt(amount),
+            customer_name: customerName,
+            customer_email: customerEmail,
+            birth_date: birthDate,
+            calendar_type: calendarType,
+            birth_time: birthTime,
+            gender: gender,
+            package_name: packageName,
+            status: 'failed',
+          });
+        } catch (dbError) {
+          console.error('실패 정보 DB 저장 오류:', dbError);
+        }
+      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -57,8 +84,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 결제 성공 - 여기서 추가 작업 수행 가능
-    console.log('결제 승인 성공:', {
+    // ✅ 결제 성공 - Supabase에 주문 정보 저장
+    if (supabaseAdmin) {
+      console.log('결제 승인 성공, DB 저장 시작...');
+      
+      const { data: orderData, error: dbError } = await supabaseAdmin
+        .from('orders')
+        .insert({
+          order_id: data.orderId,
+          payment_key: paymentKey,
+          amount: data.totalAmount,
+          method: data.method,
+          approved_at: data.approvedAt,
+          customer_name: customerName,
+          customer_email: customerEmail,
+          birth_date: birthDate,
+          calendar_type: calendarType,
+          birth_time: birthTime,
+          gender: gender,
+          package_name: packageName,
+          status: 'completed',
+        })
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('❌ DB 저장 오류:', dbError);
+        // DB 저장 실패해도 결제는 성공했으므로 성공 응답 (중요!)
+        // 하지만 관리자에게 알림을 보내야 함
+      } else {
+        console.log('✅ 결제 정보 DB 저장 성공:', orderData?.id);
+      }
+    } else {
+      console.warn('⚠️ Supabase 미설정 - DB 저장 건너뜀');
+    }
+
+    // 결제 성공 로그
+    console.log('결제 완료:', {
       orderId: data.orderId,
       orderName: data.orderName,
       method: data.method,
@@ -66,14 +128,7 @@ export async function POST(request: NextRequest) {
       customerName,
       customerEmail,
       packageName,
-      birthDate,
-      calendarType,
-      birthTime,
-      gender,
     });
-
-    // TODO: 구글 시트에 결제 정보 저장 (선택사항)
-    // await saveToGoogleSheet({ ...data, customerName, customerEmail, packageName, birthDate, calendarType, birthTime, gender });
 
     // TODO: 이메일 발송 (선택사항)
     // await sendConfirmationEmail(customerEmail, { packageName, orderName: data.orderName });
