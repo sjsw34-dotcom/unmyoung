@@ -316,10 +316,10 @@ function OrderModal({
 
           {/* 포함 내용 */}
           <div className="mb-6 p-5 rounded-2xl bg-gray-50 border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-3">📋 포함 내용</h4>
+            <h4 className="font-semibold text-gray-900 mb-3 text-base">📋 포함 내용</h4>
             <ul className="space-y-2">
               {pkg.points.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                <li key={i} className="flex items-start gap-2 text-base text-gray-700">
                   <span className={`mt-0.5 flex-shrink-0 ${point.included ? 'text-blue-600' : 'text-gray-400'}`}>
                     {point.included ? '✓' : '✕'}
                   </span>
@@ -332,8 +332,8 @@ function OrderModal({
           {/* 결제 금액 */}
           <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">총 결제 금액</span>
-              <span className="text-2xl md:text-3xl font-bold text-blue-600">
+              <span className="text-gray-700 text-base">총 결제 금액</span>
+              <span className="text-3xl md:text-4xl font-bold text-blue-600">
                 {pkg.price}
               </span>
             </div>
@@ -342,11 +342,11 @@ function OrderModal({
           {/* 개인정보 입력 폼 */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-4">📝 정보 입력</h4>
+              <h4 className="font-semibold text-gray-900 mb-4 text-base">📝 정보 입력</h4>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-base font-medium text-gray-700 mb-2">
                     이름 *
                   </label>
                   <input
@@ -355,14 +355,14 @@ function OrderModal({
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="홍길동"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-base font-medium text-gray-700 mb-2">
                       생년월일 *
                     </label>
                     <input
@@ -371,12 +371,12 @@ function OrderModal({
                       required
                       value={formData.birthDate}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-base font-medium text-gray-700 mb-2">
                       양력/음력/윤달 *
                     </label>
                     <select
@@ -384,7 +384,7 @@ function OrderModal({
                       required
                       value={formData.calendarType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="solar" className="bg-white">양력</option>
@@ -396,7 +396,7 @@ function OrderModal({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-base font-medium text-gray-700 mb-2">
                       생시 *
                     </label>
                     <select
@@ -404,7 +404,7 @@ function OrderModal({
                       required
                       value={formData.birthTime}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="unknown" className="bg-white">모름</option>
@@ -424,7 +424,7 @@ function OrderModal({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-base font-medium text-gray-700 mb-2">
                       성별 *
                     </label>
                     <select
@@ -432,7 +432,7 @@ function OrderModal({
                       required
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="male" className="bg-white">남성</option>
@@ -442,7 +442,7 @@ function OrderModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-base font-medium text-gray-700 mb-2">
                     이메일 (PDF 수령용) *
                   </label>
                   <input
@@ -451,7 +451,7 @@ function OrderModal({
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="example@email.com"
                   />
                 </div>
