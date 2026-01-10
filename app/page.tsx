@@ -622,6 +622,9 @@ export default function Page() {
             지금 당신에게 필요한 것은 <span className="text-white font-semibold">정확한 타이밍과 방향</span>입니다.
           </p>
 
+          {/* 구분선 */}
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-12"></div>
+
           {/* 실제 상담 사례 - review1.jpg 바로 위 */}
           <div className="mt-10 mb-8">
             <div className="text-center mb-6">
