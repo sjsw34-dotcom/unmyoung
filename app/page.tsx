@@ -196,11 +196,11 @@ const faqs = [
 
 function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
-    <div className="text-center">
-      <div className="text-sm font-semibold uppercase tracking-wider text-[#d4af37]">
+    <div className="text-center px-2">
+      <div className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-[#d4af37]">
         {eyebrow}
       </div>
-      <h2 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight text-white">
+      <h2 className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">
         {title}
       </h2>
     </div>
@@ -281,11 +281,11 @@ function OrderModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm safe-area-inset"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white border border-gray-200 rounded-t-3xl md:rounded-3xl shadow-2xl animate-slide-up md:animate-scale-in"
+        className="relative w-full max-w-2xl max-h-[90vh] sm:max-h-[95vh] overflow-y-auto bg-white border border-gray-200 rounded-t-3xl md:rounded-3xl shadow-2xl animate-slide-up md:animate-scale-in safe-bottom"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle for mobile bottom sheet */}
@@ -294,32 +294,33 @@ function OrderModal({
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all z-20"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all z-20 touch-manipulation min-w-[44px] min-h-[44px]"
+          aria-label="닫기"
         >
-          <span className="text-gray-600 text-2xl">×</span>
+          <span className="text-gray-600 text-xl sm:text-2xl">×</span>
         </button>
 
-        <div className="p-6 md:p-8 pt-8 md:pt-8">
+        <div className="p-4 sm:p-6 md:p-8 pt-10 sm:pt-12 md:pt-8">
           {/* 패키지 정보 */}
-          <div className="mb-6">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="rounded-full bg-blue-100 text-blue-600 px-3 py-1 text-xs font-semibold">
+          <div className="mb-5 sm:mb-6">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3">
+              <span className="rounded-full bg-blue-100 text-blue-600 px-2.5 sm:px-3 py-1 text-xs font-semibold">
                 {pkg.badge}
               </span>
-              {pkg.highlight && <span className="text-xl">⭐</span>}
+              {pkg.highlight && <span className="text-lg sm:text-xl">⭐</span>}
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               {pkg.name}
             </h3>
-            <p className="text-gray-600 text-sm md:text-base">{pkg.desc}</p>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">{pkg.desc}</p>
           </div>
 
           {/* 포함 내용 */}
-          <div className="mb-6 p-5 rounded-2xl bg-gray-50 border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-3 text-base">📋 포함 내용</h4>
-            <ul className="space-y-2">
+          <div className="mb-5 sm:mb-6 p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200">
+            <h4 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">📋 포함 내용</h4>
+            <ul className="space-y-1.5 sm:space-y-2">
               {pkg.points.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 text-base text-gray-700">
+                <li key={i} className="flex items-start gap-2 text-sm sm:text-base text-gray-700">
                   <span className={`mt-0.5 flex-shrink-0 ${point.included ? 'text-blue-600' : 'text-gray-400'}`}>
                     {point.included ? '✓' : '✕'}
                   </span>
@@ -330,23 +331,23 @@ function OrderModal({
           </div>
 
           {/* 결제 금액 */}
-          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+          <div className="mb-5 sm:mb-6 p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 text-base">총 결제 금액</span>
-              <span className="text-3xl md:text-4xl font-bold text-blue-600">
+              <span className="text-gray-700 text-sm sm:text-base">총 결제 금액</span>
+              <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600">
                 {pkg.price}
               </span>
             </div>
           </div>
 
           {/* 개인정보 입력 폼 */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-4 text-base">📝 정보 입력</h4>
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+            <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200">
+              <h4 className="font-semibold text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">📝 정보 입력</h4>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5 sm:mb-2">
                     이름 *
                   </label>
                   <input
@@ -355,14 +356,14 @@ function OrderModal({
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white border border-gray-300 text-gray-900 text-sm sm:text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[44px]"
                     placeholder="홍길동"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5 sm:mb-2">
                       생년월일 *
                     </label>
                     <input
@@ -371,12 +372,12 @@ function OrderModal({
                       required
                       value={formData.birthDate}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white border border-gray-300 text-gray-900 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[44px]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5 sm:mb-2">
                       양력/음력/윤달 *
                     </label>
                     <select
@@ -384,7 +385,7 @@ function OrderModal({
                       required
                       value={formData.calendarType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white border border-gray-300 text-gray-900 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer min-h-[44px]"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="solar" className="bg-white">양력</option>
@@ -394,9 +395,9 @@ function OrderModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5 sm:mb-2">
                       생시 *
                     </label>
                     <select
@@ -404,7 +405,7 @@ function OrderModal({
                       required
                       value={formData.birthTime}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white border border-gray-300 text-gray-900 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer min-h-[44px]"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="unknown" className="bg-white">모름</option>
@@ -424,7 +425,7 @@ function OrderModal({
                   </div>
 
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5 sm:mb-2">
                       성별 *
                     </label>
                     <select
@@ -432,7 +433,7 @@ function OrderModal({
                       required
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white border border-gray-300 text-gray-900 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer min-h-[44px]"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="male" className="bg-white">남성</option>
@@ -442,7 +443,7 @@ function OrderModal({
                 </div>
 
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5 sm:mb-2">
                     이메일 (PDF 수령용) *
                   </label>
                   <input
@@ -451,7 +452,7 @@ function OrderModal({
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white border border-gray-300 text-gray-900 text-sm sm:text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[44px]"
                     placeholder="example@email.com"
                   />
                 </div>
@@ -461,22 +462,16 @@ function OrderModal({
             {/* 제출 버튼 */}
             <button
               type="submit"
-              className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 touch-manipulation shadow-lg shadow-blue-600/30"
+              className="w-full py-3.5 sm:py-4 rounded-xl bg-blue-600 text-white font-semibold text-base sm:text-lg hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 touch-manipulation shadow-lg shadow-blue-600/30 min-h-[48px] flex items-center justify-center"
             >
               {pkg.price} 결제하기 →
             </button>
 
             {/* 안내 문구 */}
-            <p className="text-center text-sm text-gray-500">
-              버튼을 누르면 카카오톡으로 제공받을 PDF를 발송해드립니다.
-              <br />
-              입력하신 정보를 복사해 복사해서 사전에 신청해주세요.
-            </p>
-
-            <p className="text-center text-xs text-gray-500">
-              버튼을 누르면 카카오톡 채널로 이동합니다.
-              <br />
-              입력하신 정보를 복사해서 전달해주세요.
+            <p className="text-center text-xs sm:text-sm text-gray-500 leading-relaxed">
+              버튼을 누르면 토스페이먼츠 결제창이 열립니다.
+              <br className="hidden sm:block" />
+              결제 완료 후 PDF를 이메일로 발송해드립니다.
             </p>
           </form>
         </div>
@@ -526,11 +521,17 @@ export default function Page() {
   return (
     <main className="min-h-screen bg-[#07080b] text-white">
       {/* Top Notice */}
-      <div className="sticky top-0 z-40 border-b border-white/10 bg-[#07080b]/90 backdrop-blur">
-        <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-center">
-          <div className="text-sm text-white/80">
-            <span className="font-semibold text-lg text-white">50명 한정 29,900원</span>{" "}
-            <span className="text-lg text-white/60">· 40명 마감 / 10명 남음 · 마감 후 정가 49,800원</span>
+      <div className="sticky top-0 z-40 border-b border-white/10 bg-[#07080b]/90 backdrop-blur safe-top">
+        <div className="mx-auto max-w-5xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-center">
+          <div className="text-xs sm:text-sm text-white/80 text-center">
+            <span className="font-semibold text-base sm:text-lg text-white">50명 한정 29,900원</span>
+            <span className="hidden sm:inline">{" "}</span>
+            <span className="block sm:inline text-base sm:text-lg text-white/60">
+              <span className="hidden sm:inline">· </span>
+              <span className="sm:hidden"><br /></span>
+              40명 마감 / 10명 남음
+              <span className="hidden md:inline"> · 마감 후 정가 49,800원</span>
+            </span>
           </div>
         </div>
       </div>
@@ -540,82 +541,82 @@ export default function Page() {
         {/* 영상 배경 */}
         <VideoBackground videoSrc="/videos/seoul.mp4" overlayOpacity={70} />
         
-        <div className="relative z-10 mx-auto max-w-5xl px-4 pt-14 pb-12 md:pt-20 md:pb-24 min-h-[600px] md:min-h-[700px] flex items-center">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 md:pt-20 pb-10 sm:pb-12 md:pb-24 min-h-[550px] sm:min-h-[600px] md:min-h-[700px] flex items-center">
           <div
             ref={heroRef}
-            className={`grid gap-10 md:grid-cols-[1.2fr_0.8fr] items-center w-full transition-all duration-1000 ${
+            className={`grid gap-8 sm:gap-10 md:grid-cols-[1.2fr_0.8fr] items-center w-full transition-all duration-1000 ${
               heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm md:text-base text-white/80 animate-pulse">
+          <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs sm:text-sm md:text-base text-white/80 animate-pulse">
                 <span className="text-[#d4af37]">●</span> 
                 <span className="hidden sm:inline">만세력 기반 정통 명리 분석 · PDF 평생 소장</span>
                 <span className="sm:hidden">정통 명리 분석 · PDF 소장</span>
-              </div>
+            </div>
 
-              <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.15]">
-                단순 운세가 아닙니다.
+              <h1 className="mt-4 sm:mt-5 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold tracking-tight leading-[1.15]">
+              단순 운세가 아닙니다.
                 <br className="hidden sm:block" />
                 <span className="sm:hidden"> </span>
                 <span className="text-[#d4af37]">당신의 '선택'을 바꾸는 타이밍 분석</span>입니다.
-              </h1>
+            </h1>
 
-              <p className="mt-5 text-lg md:text-xl text-white/75 leading-relaxed">
-                요즘 들어 자꾸 같은 고민이 맴도시나요?
+              <p className="mt-4 sm:mt-5 text-base sm:text-lg md:text-xl text-white/75 leading-relaxed">
+              요즘 들어 자꾸 같은 고민이 맴도시나요?
                 <br className="hidden sm:block" />
                 <span className="sm:hidden"> </span>
-                뭔가 해야 할 것 같은데 확신이 없고, 기다려야 할 것 같은데 조급하고,
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-                결정을 내려야 하는데 자꾸 미루게 되고.
-              </p>
+              뭔가 해야 할 것 같은데 확신이 없고, 기다려야 할 것 같은데 조급하고,
+                <br className="hidden md:block" />
+                <span className="md:hidden"> </span>
+              결정을 내려야 하는데 자꾸 미루게 되고.
+            </p>
 
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <a
-                  href="#packages"
-                  className="rounded-xl border border-white/15 bg-white/5 px-6 py-4 text-center font-semibold text-lg md:text-xl text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation"
-                >
-                  상품 구성 보기
-                </a>
-              </div>
-
-              <p className="mt-4 text-sm md:text-base text-white/50">
-                새벽 문의도 괜찮습니다. 편하실 때 메시지 주세요.
-              </p>
+            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3">
+              <a
+                href="#packages"
+                  className="rounded-xl border border-white/15 bg-white/5 px-5 sm:px-6 py-3.5 sm:py-4 text-center font-semibold text-base sm:text-lg md:text-xl text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation min-h-[48px] flex items-center justify-center"
+              >
+                상품 구성 보기
+              </a>
             </div>
 
-            {/* Trust card */}
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300">
-              <div className="text-lg font-semibold text-white/90">상담자 이력</div>
-              <ul className="mt-3 space-y-2 text-lg text-white/70">
-                <li>· 사주팔자 명리심리상담사 1급</li>
-                <li>· 가족심리상담사 1급</li>
-                <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
-              </ul>
+              <p className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-white/50">
+              새벽 문의도 괜찮습니다. 편하실 때 메시지 주세요.
+            </p>
+          </div>
+
+          {/* Trust card */}
+            <div className="hidden md:block rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300">
+              <div className="text-base sm:text-lg font-semibold text-white/90">상담자 이력</div>
+              <ul className="mt-3 space-y-2 text-sm sm:text-base md:text-lg text-white/70">
+              <li>· 사주팔자 명리심리상담사 1급</li>
+              <li>· 가족심리상담사 1급</li>
+              <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
+            </ul>
             </div>
           </div>
         </div>
       </section>
 
       {/* Hooking Section */}
-      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-14 border-t border-white/10">
         <div
           ref={hookingRef}
           className={`text-center w-full mx-auto transition-all duration-1000 ${
             hookingVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-white/80 mb-5 sm:mb-6">
             <span className="text-[#d4af37]">✨</span> 
             <span>이미 수백명이 선택했습니다</span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight px-2">
             고민만 하다 <span className="text-[#d4af37]">타이밍을 놓치지 마세요</span>
           </h2>
 
-          <p className="mt-6 text-lg md:text-xl text-white/75 leading-relaxed">
+          <p className="mt-5 sm:mt-6 text-base sm:text-lg md:text-xl text-white/75 leading-relaxed px-2">
             "그때 결정했더라면..."이라는 후회를 하지 않으려면,
             <br className="hidden md:block" />
             <span className="md:hidden"> </span>
@@ -626,19 +627,19 @@ export default function Page() {
           <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-12"></div>
 
           {/* 실제 상담 사례 - review1.jpg 바로 위 */}
-          <div className="mt-10 mb-8">
-            <div className="text-center mb-6">
-              <div className="text-base font-semibold uppercase tracking-wider text-[#d4af37]">
+          <div className="mt-8 sm:mt-10 mb-6 sm:mb-8">
+            <div className="text-center mb-5 sm:mb-6">
+              <div className="text-sm sm:text-base font-semibold uppercase tracking-wider text-[#d4af37]">
                 실제 상담 사례
               </div>
-              <h3 className="mt-2 text-4xl md:text-5xl font-bold tracking-tight text-white">
+              <h3 className="mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white px-2">
                 이런 고민, 혹시 당신도 있으신가요?
               </h3>
             </div>
 
             <div
               ref={storyRef}
-              className={`grid gap-6 md:grid-cols-2 transition-all duration-1000 ${
+              className={`grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 md:grid-cols-2 transition-all duration-1000 ${
                 storyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
@@ -662,12 +663,12 @@ export default function Page() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105"
+                  className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 md:p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] md:hover:scale-105"
                 >
-                  <div className="text-base font-semibold text-[#d4af37]">
+                  <div className="text-sm sm:text-base font-semibold text-[#d4af37]">
                     {item.question}
                   </div>
-                  <p className="mt-3 text-lg leading-relaxed text-white/75 whitespace-pre-line">
+                  <p className="mt-2 sm:mt-3 text-sm sm:text-base md:text-lg leading-relaxed text-white/75 whitespace-pre-line">
                     "{item.text}"
                   </p>
                 </div>
@@ -676,18 +677,20 @@ export default function Page() {
           </div>
 
           {/* 리뷰 이미지 1 - 상단 */}
-          <div className="mt-10 mb-6">
+          <div className="mt-8 sm:mt-10 mb-6">
             <Image
               src="/images/review1.jpg"
               alt="고객 리뷰 1"
               width={800}
               height={600}
-              className="w-full h-auto rounded-2xl shadow-2xl border border-white/10"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 800px"
+              className="w-full h-auto rounded-xl sm:rounded-2xl shadow-2xl border border-white/10"
               priority={false}
+              loading="lazy"
             />
           </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3 text-center">
+          <div className="mt-6 sm:mt-8 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3 text-center">
             {[
               { icon: "⏰", label: "타이밍", desc: "언제가 최적기인지" },
               { icon: "🎯", label: "방향성", desc: "어떤 선택을 해야 하는지" },
@@ -695,29 +698,31 @@ export default function Page() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-white/20 hover:bg-white/10 transition-all"
+                className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5 hover:border-white/20 hover:bg-white/10 transition-all"
               >
-                <div className="text-3xl mb-2">{item.icon}</div>
-                <div className="font-semibold text-white mb-1">{item.label}</div>
-                <div className="text-sm text-white/60">{item.desc}</div>
+                <div className="text-2xl sm:text-3xl mb-2">{item.icon}</div>
+                <div className="text-sm sm:text-base font-semibold text-white mb-1">{item.label}</div>
+                <div className="text-xs sm:text-sm text-white/60">{item.desc}</div>
               </div>
             ))}
           </div>
 
           {/* 리뷰 이미지 2 - 하단 */}
-          <div className="mt-10">
+          <div className="mt-8 sm:mt-10">
             <Image
               src="/images/review2.jpg"
               alt="고객 리뷰 2"
               width={800}
               height={600}
-              className="w-full h-auto rounded-2xl shadow-2xl border border-white/10"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 800px"
+              className="w-full h-auto rounded-xl sm:rounded-2xl shadow-2xl border border-white/10"
               priority={false}
+              loading="lazy"
             />
           </div>
 
-          <div className="mt-10 p-6 rounded-2xl bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 border border-[#d4af37]/20">
-            <p className="text-base md:text-lg text-white/90 leading-relaxed">
+          <div className="mt-8 sm:mt-10 p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 border border-[#d4af37]/20">
+            <p className="text-sm sm:text-base md:text-lg text-white/90 leading-relaxed">
               <span className="font-semibold text-[#d4af37]">100페이지 이상의 상세한 PDF 리포트</span>로
               <br className="hidden md:block" />
               <span className="md:hidden"> </span>
@@ -728,12 +733,12 @@ export default function Page() {
       </section>
 
       {/* Packages */}
-      <section id="packages" className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section id="packages" className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-14 border-t border-white/10">
         <SectionTitle eyebrow="상품 구성" title="당신에게 맞는 분석을 선택하세요" />
 
         <div
           ref={packagesRef}
-          className={`mt-8 grid gap-6 md:grid-cols-3 transition-all duration-1000 ${
+          className={`mt-8 grid gap-5 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 transition-all duration-1000 ${
             packagesVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -741,7 +746,7 @@ export default function Page() {
             <div
               key={i}
               onClick={() => openModal(pkg)}
-              className={`group cursor-pointer rounded-2xl border p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl touch-manipulation flex flex-col ${
+              className={`group cursor-pointer rounded-xl sm:rounded-2xl border p-5 sm:p-6 transition-all duration-300 hover:scale-[1.02] md:hover:scale-105 hover:shadow-xl touch-manipulation flex flex-col min-h-[480px] sm:min-h-[500px] ${
                 pkg.highlight
                   ? "border-[#d4af37] bg-gradient-to-b from-[#d4af37]/10 to-transparent shadow-lg shadow-[#d4af37]/20"
                   : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
@@ -749,7 +754,7 @@ export default function Page() {
             >
               <div className="mb-3 flex items-center justify-between">
                 <span
-                  className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                  className={`rounded-full px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-semibold ${
                     pkg.highlight
                       ? "bg-[#d4af37] text-black"
                       : "bg-white/10 text-white/70"
@@ -758,26 +763,26 @@ export default function Page() {
                   {pkg.badge}
                 </span>
                 {pkg.highlight && (
-                  <span className="text-2xl">⭐</span>
+                  <span className="text-xl sm:text-2xl">⭐</span>
                 )}
               </div>
 
               <h3
-                className={`text-2xl font-bold ${
+                className={`text-xl sm:text-2xl font-bold ${
                   pkg.highlight ? "text-[#d4af37]" : "text-white"
                 }`}
               >
                 {pkg.name}
               </h3>
 
-              <p className="mt-2 text-base text-white/60 leading-relaxed whitespace-pre-line">
+              <p className="mt-2 text-sm sm:text-base text-white/60 leading-relaxed whitespace-pre-line">
                 {pkg.desc}
               </p>
 
-              <ul className="mt-4 space-y-2 flex-grow">
+              <ul className="mt-4 space-y-2 flex-grow text-sm sm:text-base">
                 {pkg.points.map((point, j) => (
-                  <li key={j} className="flex items-start gap-2 text-base text-white/75">
-                    <span className={`mt-0.5 ${point.included ? 'text-[#d4af37]' : 'text-white/30'}`}>
+                  <li key={j} className="flex items-start gap-2 text-white/75">
+                    <span className={`mt-0.5 flex-shrink-0 ${point.included ? 'text-[#d4af37]' : 'text-white/30'}`}>
                       {point.included ? '✓' : '✕'}
                     </span>
                     <span className={point.included ? '' : 'text-white/30 line-through'}>{point.text}</span>
@@ -785,11 +790,11 @@ export default function Page() {
                 ))}
               </ul>
 
-              <div className="mt-6 flex items-center justify-between gap-3">
-                <span className={`text-2xl font-bold ${pkg.highlight ? 'text-[#d4af37]' : 'text-white'}`}>
+              <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <span className={`text-xl sm:text-2xl font-bold text-center sm:text-left ${pkg.highlight ? 'text-[#d4af37]' : 'text-white'}`}>
                   {pkg.price}
                 </span>
-                <button className={`flex-1 rounded-xl py-3 text-base font-semibold transition-all group-hover:scale-105 ${
+                <button className={`flex-1 rounded-xl py-3 sm:py-3.5 text-sm sm:text-base font-semibold transition-all group-hover:scale-105 touch-manipulation min-h-[48px] flex items-center justify-center ${
                   pkg.highlight
                     ? "bg-[#d4af37] text-black hover:opacity-90"
                     : "border border-white/20 bg-white/5 text-white hover:bg-white/10"
@@ -803,77 +808,78 @@ export default function Page() {
       </section>
 
       {/* Mid Hooking Section - 패키지와 FAQ 사이 */}
-      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-14 border-t border-white/10">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-8 text-white">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-6 sm:mb-8 text-white px-2">
             혹시 이런 생각 하고 계신가요?
           </h2>
 
-          <div className="space-y-4 mb-8">
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
-              <p className="text-lg md:text-xl text-white/90 italic">
+          <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+            <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-white/10 bg-white/5">
+              <p className="text-base sm:text-lg md:text-xl text-white/90 italic">
                 "나중에 해도 되지 않을까?"
               </p>
             </div>
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
-              <p className="text-lg md:text-xl text-white/90 italic">
+            <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-white/10 bg-white/5">
+              <p className="text-base sm:text-lg md:text-xl text-white/90 italic">
                 "진짜 도움이 될까?"
               </p>
             </div>
           </div>
 
-          <p className="text-xl md:text-2xl text-white/80 leading-relaxed mb-8">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/80 leading-relaxed mb-6 sm:mb-8 px-2">
             근데요, 그 <span className="text-[#d4af37] font-semibold">'나중'</span>이 언제인지
-            <br />
+            <br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>
             아는 게 사주 분석이에요.
           </p>
 
-          <div className="border-t border-white/20 my-10"></div>
+          <div className="border-t border-white/20 my-8 sm:my-10"></div>
 
-          <div className="mt-10 p-6 rounded-2xl bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 border border-[#d4af37]/20 mb-8">
+          <div className="mt-8 sm:mt-10 p-5 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 border border-[#d4af37]/20 mb-6 sm:mb-8">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-2xl">⏰</span>
-              <p className="text-lg md:text-xl text-white/90 font-semibold">
+              <span className="text-xl sm:text-2xl">⏰</span>
+              <p className="text-base sm:text-lg md:text-xl text-white/90 font-semibold">
                 10자리 남음
               </p>
             </div>
-          </div>
+        </div>
 
-          <div className="mt-8">
-            <Link
-              href={CHAT_URL}
+          <div className="mt-6 sm:mt-8">
+          <Link
+            href={CHAT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block rounded-xl bg-[#d4af37] px-8 py-4 text-lg md:text-xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation"
-            >
+              className="inline-block rounded-xl bg-[#d4af37] px-6 sm:px-8 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation min-h-[48px] flex items-center justify-center"
+          >
               내 타이밍 확인하기 →
-            </Link>
+          </Link>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-14 border-t border-white/10">
         <SectionTitle eyebrow="자주 묻는 질문" title="FAQ" />
 
         <div
           ref={faqRef}
-          className={`mt-8 space-y-4 transition-all duration-1000 ${
+          className={`mt-6 sm:mt-8 space-y-3 sm:space-y-4 transition-all duration-1000 ${
             faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
           {faqs.map((faq, i) => (
             <div
               key={i}
-              className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all hover:border-white/20 hover:bg-white/10"
+              className="overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 transition-all hover:border-white/20 hover:bg-white/10"
             >
               <button
                 onClick={() => toggleFAQ(i)}
-                className="flex w-full items-center justify-between p-5 text-left transition-all hover:bg-white/5 touch-manipulation"
+                className="flex w-full items-center justify-between p-4 sm:p-5 text-left transition-all hover:bg-white/5 touch-manipulation min-h-[56px] sm:min-h-[64px]"
               >
-                <span className="font-semibold text-white pr-4">{faq.q}</span>
+                <span className="font-semibold text-sm sm:text-base text-white pr-4">{faq.q}</span>
                 <span
-                  className={`text-2xl text-[#d4af37] transition-transform duration-300 flex-shrink-0 ${
+                  className={`text-xl sm:text-2xl text-[#d4af37] transition-transform duration-300 flex-shrink-0 ${
                     openFAQ === i ? "rotate-180" : ""
                   }`}
                 >
@@ -888,7 +894,7 @@ export default function Page() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="px-5 pb-5 text-white/75 leading-relaxed">
+                  <p className="px-4 sm:px-5 pb-4 sm:pb-5 text-sm sm:text-base text-white/75 leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
@@ -903,43 +909,46 @@ export default function Page() {
         {/* 영상 배경 */}
         <VideoBackground videoSrc="/videos/hwasung.mp4" overlayOpacity={75} />
         
-        <div className="relative z-10 mx-auto max-w-5xl px-4 py-16 md:py-24 text-center">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24 text-center">
           <div
             ref={ctaRef}
             className={`transition-all duration-1000 ${
               ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight px-2">
               당신의 인생, 이제 <span className="text-[#d4af37]">명확한 방향</span>으로
               <br className="hidden md:block" />
               <span className="md:hidden"> </span>
               선택하세요
             </h2>
 
-            <p className="mt-6 text-xl md:text-2xl text-white/80">
-              50명 한정 29,900원 · 10명 남음 · 마감 후 정가 49,800원
+            <p className="mt-5 sm:mt-6 text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 px-2">
+              50명 한정 29,900원 · 10명 남음
+              <br className="sm:hidden" />
+              <span className="hidden sm:inline"> · </span>
+              마감 후 정가 49,800원
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <a
                 href="#packages"
-                className="rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-lg font-semibold text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation"
+                className="rounded-xl border border-white/20 bg-white/5 px-6 sm:px-8 py-3.5 sm:py-4 text-base sm:text-lg font-semibold text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation min-h-[48px] flex items-center justify-center"
               >
                 상품 다시 보기
               </a>
-            </div>
+          </div>
 
-            <p className="mt-6 text-sm text-white/60">
+            <p className="mt-5 sm:mt-6 text-xs sm:text-sm text-white/60 px-2">
               24시간 내 답변 · PDF 평생 소장 · 2026년 신년 특별가
-            </p>
+          </p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#0f1014] px-4 py-8">
-        <div className="mx-auto max-w-5xl text-center text-sm text-white/50">
+      <footer className="border-t border-white/10 bg-[#0f1014] px-4 sm:px-6 lg:px-8 py-6 sm:py-8 safe-bottom">
+        <div className="mx-auto max-w-5xl text-center text-xs sm:text-sm text-white/50">
           <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
           <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
         </div>
@@ -955,17 +964,17 @@ export default function Page() {
         href={CHAT_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-8 right-8 z-50 w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#FEE500] hover:bg-[#FDD835] shadow-2xl hover:shadow-[#FEE500]/50 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group animate-bounce-subtle"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#FEE500] hover:bg-[#FDD835] shadow-2xl hover:shadow-[#FEE500]/50 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group animate-bounce-subtle touch-manipulation safe-bottom safe-right"
         aria-label="카카오톡 채팅문의"
       >
         <svg
-          className="w-8 h-8 md:w-10 md:h-10 text-[#3C1E1E]"
+          className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-[#3C1E1E]"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
           <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z"/>
         </svg>
-        <span className="absolute -top-1 -right-1 w-5 h-5 md:w-6 md:h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-bold animate-pulse">
+        <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs md:text-sm font-bold animate-pulse">
           !
         </span>
       </Link>
