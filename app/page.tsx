@@ -220,6 +220,8 @@ function OrderModal({
   const [formData, setFormData] = useState({
     name: "",
     birthDate: "",
+    calendarType: "", // 양력/음력/윤달
+    birthTime: "", // 생시
     gender: "",
     email: "",
   });
@@ -261,7 +263,7 @@ function OrderModal({
         orderName: pkg.name,
         customerName: formData.name,
         customerEmail: formData.email,
-        successUrl: `${appUrl}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
+        successUrl: `${appUrl}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&calendarType=${formData.calendarType}&birthTime=${encodeURIComponent(formData.birthTime)}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
         failUrl: `${appUrl}/payment/fail`,
       });
 
@@ -371,6 +373,54 @@ function OrderModal({
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      양력/음력/윤달 *
+                    </label>
+                    <select
+                      name="calendarType"
+                      required
+                      value={formData.calendarType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-white text-gray-500">선택</option>
+                      <option value="solar" className="bg-white">양력</option>
+                      <option value="lunar" className="bg-white">음력</option>
+                      <option value="leap" className="bg-white">윤달</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      생시 *
+                    </label>
+                    <select
+                      name="birthTime"
+                      required
+                      value={formData.birthTime}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-white text-gray-500">선택</option>
+                      <option value="unknown" className="bg-white">모름</option>
+                      <option value="23:30-01:30" className="bg-white">자시 (23:30-01:30)</option>
+                      <option value="01:30-03:30" className="bg-white">축시 (01:30-03:30)</option>
+                      <option value="03:30-05:30" className="bg-white">인시 (03:30-05:30)</option>
+                      <option value="05:30-07:30" className="bg-white">묘시 (05:30-07:30)</option>
+                      <option value="07:30-09:30" className="bg-white">진시 (07:30-09:30)</option>
+                      <option value="09:30-11:30" className="bg-white">사시 (09:30-11:30)</option>
+                      <option value="11:30-13:30" className="bg-white">오시 (11:30-13:30)</option>
+                      <option value="13:30-15:30" className="bg-white">미시 (13:30-15:30)</option>
+                      <option value="15:30-17:30" className="bg-white">신시 (15:30-17:30)</option>
+                      <option value="17:30-19:30" className="bg-white">유시 (17:30-19:30)</option>
+                      <option value="19:30-21:30" className="bg-white">술시 (19:30-21:30)</option>
+                      <option value="21:30-23:30" className="bg-white">해시 (21:30-23:30)</option>
+                    </select>
                   </div>
 
                   <div>

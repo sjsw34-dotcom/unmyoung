@@ -17,6 +17,8 @@ export default function PaymentSuccessClient() {
   const customerEmail = searchParams.get('email');
   const packageName = searchParams.get('package');
   const birthDate = searchParams.get('birthDate');
+  const calendarType = searchParams.get('calendarType');
+  const birthTime = searchParams.get('birthTime');
   const gender = searchParams.get('gender');
 
   useEffect(() => {
@@ -42,6 +44,8 @@ export default function PaymentSuccessClient() {
             customerEmail,
             packageName,
             birthDate,
+            calendarType,
+            birthTime,
             gender,
           }),
         });
@@ -62,7 +66,7 @@ export default function PaymentSuccessClient() {
     };
 
     confirmPayment();
-  }, [orderId, amount, paymentKey, customerName, customerEmail, packageName, birthDate, gender]);
+  }, [orderId, amount, paymentKey, customerName, customerEmail, packageName, birthDate, calendarType, birthTime, gender]);
 
   if (isConfirming) {
     return (
@@ -113,6 +117,24 @@ export default function PaymentSuccessClient() {
             <div className="flex justify-between">
               <span>이름:</span>
               <span className="font-semibold text-white">{customerName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>생년월일:</span>
+              <span className="font-semibold text-white">{birthDate}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>양/음력:</span>
+              <span className="font-semibold text-white">
+                {calendarType === 'solar' ? '양력' : calendarType === 'lunar' ? '음력' : calendarType === 'leap' ? '윤달' : '-'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>생시:</span>
+              <span className="font-semibold text-white">{birthTime === 'unknown' ? '모름' : birthTime}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>성별:</span>
+              <span className="font-semibold text-white">{gender === 'male' ? '남성' : '여성'}</span>
             </div>
             <div className="flex justify-between">
               <span>이메일:</span>

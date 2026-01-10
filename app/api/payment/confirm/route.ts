@@ -10,6 +10,8 @@ export async function POST(request: NextRequest) {
       customerEmail,
       packageName,
       birthDate,
+      calendarType,
+      birthTime,
       gender,
     } = await request.json();
 
@@ -65,11 +67,13 @@ export async function POST(request: NextRequest) {
       customerEmail,
       packageName,
       birthDate,
+      calendarType,
+      birthTime,
       gender,
     });
 
     // TODO: 구글 시트에 결제 정보 저장 (선택사항)
-    // await saveToGoogleSheet({ ...data, customerName, customerEmail, packageName, birthDate, gender });
+    // await saveToGoogleSheet({ ...data, customerName, customerEmail, packageName, birthDate, calendarType, birthTime, gender });
 
     // TODO: 이메일 발송 (선택사항)
     // await sendConfirmationEmail(customerEmail, { packageName, orderName: data.orderName });
