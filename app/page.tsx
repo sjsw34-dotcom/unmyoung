@@ -965,7 +965,7 @@ export default function Page() {
                 alt="운명테라피 로고"
                 width={200}
                 height={120}
-                className="object-contain"
+                className="object-contain brightness-0 invert"
                 priority={false}
               />
             </div>
