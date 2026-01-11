@@ -99,17 +99,19 @@ function VideoBackground({
       )}
 
       {/* 폴백 배경 (영상 로딩 중, 모바일, 또는 에러 시 항상 표시) */}
+      {/* 원래 색상: from-[#07080b] via-[#0f1014] to-[#1a1a1f] -> #15131a 계열 -> #121212 딥 차콜 톤 */}
       <div
-        className={`absolute inset-0 bg-gradient-to-b from-[#07080b] via-[#0f1014] to-[#1a1a1f] transition-opacity duration-1000 ${
+        className={`absolute inset-0 bg-gradient-to-b from-[#121212] via-[#131313] to-[#141414] transition-opacity duration-1000 ${
           isVideoLoaded && !hasError && !isMobile ? "opacity-0" : "opacity-100"
         }`}
       />
 
       {/* 오버레이 (텍스트 가독성) */}
+      {/* 원래 색상: rgba(7, 8, 11, ...) -> #07080b -> #15131a -> #121212 딥 차콜 톤 */}
       <div
         className="absolute inset-0 z-[1]"
         style={{
-          background: `linear-gradient(to bottom, rgba(7, 8, 11, ${overlayOpacity / 100}), rgba(7, 8, 11, ${
+          background: `linear-gradient(to bottom, rgba(18, 18, 18, ${overlayOpacity / 100}), rgba(18, 18, 18, ${
             overlayOpacity / 100 + 0.2
           }))`,
         }}
@@ -519,9 +521,10 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-screen bg-[#07080b] text-white">
+    <main className="min-h-screen bg-[#121212] text-white">
       {/* Top Notice */}
-      <div className="sticky top-0 z-40 border-b border-white/10 bg-[#07080b]/90 backdrop-blur safe-top">
+      {/* 원래 배경색: bg-[#07080b]/90 -> bg-[#15131a]/90 -> bg-[#121212]/90 */}
+      <div className="sticky top-0 z-40 border-b border-white/10 bg-[#121212]/90 backdrop-blur safe-top">
         <div className="mx-auto max-w-5xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-center">
           <div className="text-xs sm:text-sm text-white/80 text-center">
             <span className="font-semibold text-base sm:text-lg text-white">50명 한정 29,900원</span>
@@ -947,7 +950,8 @@ export default function Page() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#0f1014] px-4 sm:px-6 lg:px-8 py-6 sm:py-8 safe-bottom">
+      {/* 원래 배경색: bg-[#0f1014] -> bg-[#15131a] -> bg-[#121212] 딥 차콜 톤 (약간 밝게: #131313) */}
+      <footer className="border-t border-white/10 bg-[#131313] px-4 sm:px-6 lg:px-8 py-6 sm:py-8 safe-bottom">
         <div className="mx-auto max-w-5xl text-center text-xs sm:text-sm text-white/50">
           <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
           <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
