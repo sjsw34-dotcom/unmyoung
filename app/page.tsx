@@ -938,18 +938,37 @@ export default function Page() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#0f1014] px-4 py-8">
-        <div className="mx-auto max-w-5xl text-center text-sm text-white/50">
-          <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
-          <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
-          <div className="mt-4 flex flex-wrap justify-center gap-4">
-            <Link href="/terms" className="hover:text-white transition-colors">
-              이용약관
-            </Link>
-            <span>·</span>
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              개인정보처리방침
-            </Link>
+      <footer className="border-t border-white/10 bg-[#0f1014] px-4 py-12">
+        <div className="mx-auto max-w-5xl">
+          {/* 법률 페이지 링크 */}
+          <div className="text-center text-sm text-white/50 pb-6">
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/terms" className="hover:text-white transition-colors">
+                이용약관
+              </Link>
+              <span>·</span>
+              <Link href="/privacy" className="hover:text-white transition-colors">
+                개인정보처리방침
+              </Link>
+            </div>
+          </div>
+
+          {/* 구분선 */}
+          <div className="border-t border-white/10 my-6"></div>
+
+          {/* 사업자 정보 */}
+          <div className="text-center text-xs text-white/40 space-y-2">
+            <p className="font-semibold text-white/60">운명테라피 (Unmyoung Therapy)</p>
+            <div className="space-y-1">
+              <p>대표자: [대표자명] | 사업자등록번호: [000-00-00000]</p>
+              <p>통신판매업 신고번호: [제0000-서울강남-00000호]</p>
+              <p>주소: [서울특별시 강남구 ○○로 ○○, ○○빌딩 ○층]</p>
+              <p>이메일: [contact@example.com] | 고객센터: 카카오톡 채널</p>
+            </div>
+            <p className="mt-4 text-white/50">© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
+            <p className="text-[10px] text-yellow-500/60 mt-3">
+              ⚠️ 주의: 위 사업자 정보는 플레이스홀더입니다. 실제 사업자 정보로 반드시 교체하세요.
+            </p>
           </div>
         </div>
       </footer>
