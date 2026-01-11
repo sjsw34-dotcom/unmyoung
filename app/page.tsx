@@ -956,19 +956,33 @@ export default function Page() {
           {/* 구분선 */}
           <div className="border-t border-white/10 my-6"></div>
 
-          {/* 사업자 정보 */}
-          <div className="text-center text-xs text-white/40 space-y-2">
-            <p className="font-semibold text-white/60">운명테라피 (Unmyoung Therapy)</p>
-            <div className="space-y-1">
-              <p>대표자: [대표자명] | 사업자등록번호: [000-00-00000]</p>
-              <p>통신판매업 신고번호: [제0000-서울강남-00000호]</p>
-              <p>주소: [서울특별시 강남구 ○○로 ○○, ○○빌딩 ○층]</p>
-              <p>이메일: [contact@example.com] | 고객센터: 카카오톡 채널</p>
+          {/* 로고 & 사업자 정보 */}
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+            {/* 왼쪽: 로고 */}
+            <div className="flex justify-center md:justify-start">
+              <Image
+                src="/logo/logo.png"
+                alt="운명테라피 로고"
+                width={200}
+                height={120}
+                className="object-contain"
+                priority={false}
+              />
             </div>
-            <p className="mt-4 text-white/50">© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
-            <p className="text-[10px] text-yellow-500/60 mt-3">
-              ⚠️ 주의: 위 사업자 정보는 플레이스홀더입니다. 실제 사업자 정보로 반드시 교체하세요.
-            </p>
+
+            {/* 오른쪽: 사업자 정보 */}
+            <div className="flex-1 text-center md:text-right text-xs text-white/40 space-y-2">
+              <div className="space-y-1">
+                <p>대표자: [대표자명] | 사업자등록번호: [000-00-00000]</p>
+                <p>통신판매업 신고번호: [제0000-서울강남-00000호]</p>
+                <p>주소: [서울특별시 강남구 ○○로 ○○, ○○빌딩 ○층]</p>
+                <p>이메일: [contact@example.com] | 고객센터: 카카오톡 채널</p>
+              </div>
+              <p className="mt-4 text-white/50">© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
+              <p className="text-[10px] text-yellow-500/60 mt-3">
+                ⚠️ 주의: 위 사업자 정보는 플레이스홀더입니다. 실제 사업자 정보로 반드시 교체하세요.
+              </p>
+            </div>
           </div>
         </div>
       </footer>
