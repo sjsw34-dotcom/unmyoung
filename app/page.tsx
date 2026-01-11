@@ -942,6 +942,15 @@ export default function Page() {
         <div className="mx-auto max-w-5xl text-center text-sm text-white/50">
           <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
           <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
+          <div className="mt-4 flex flex-wrap justify-center gap-4">
+            <Link href="/terms" className="hover:text-white transition-colors">
+              이용약관
+            </Link>
+            <span>·</span>
+            <Link href="/privacy" className="hover:text-white transition-colors">
+              개인정보처리방침
+            </Link>
+          </div>
         </div>
       </footer>
 
