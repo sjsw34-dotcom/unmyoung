@@ -143,10 +143,39 @@ export default function PaymentSuccessClient() {
           </div>
         </div>
 
-        <p className="text-white/70 mb-8 leading-relaxed">
-          입력하신 <span className="font-semibold text-[#d4af37]">{customerEmail}</span>로<br />
-          <span className="font-semibold text-white">24~48시간 내</span>에 PDF 리포트를 발송해드립니다.
-          <br /><br />
+        {/* PDF 전송 안내 - 강조된 박스 */}
+        <div className="mb-8 p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#d4af37]/20 via-[#d4af37]/10 to-transparent border-2 border-[#d4af37]/30 shadow-lg shadow-[#d4af37]/20">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#d4af37] flex items-center justify-center">
+              <svg className="w-6 h-6 md:w-8 md:h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div className="flex-1 text-left">
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
+                📧 PDF 리포트 전송 안내
+              </h3>
+              <div className="space-y-2 text-base md:text-lg text-white/90 leading-relaxed">
+                <p>
+                  입력하신 <span className="font-bold text-[#d4af37]">{customerEmail}</span>로
+                </p>
+                <p className="text-xl md:text-2xl font-bold text-white">
+                  <span className="text-[#d4af37]">24시간 이내</span>에
+                </p>
+                <p className="text-lg md:text-xl font-semibold text-white">
+                  평생 소장할 수 있는 PDF 파일이 전송됩니다
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-white/20">
+                <p className="text-sm md:text-base text-white/70">
+                  💡 PDF 파일은 이메일로 발송되며, 다운로드 후 평생 보관하실 수 있습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-white/60 mb-8 text-sm md:text-base leading-relaxed">
           추가 문의사항은 카카오톡 채널로 연락주세요.
         </p>
 

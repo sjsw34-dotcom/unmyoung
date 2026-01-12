@@ -527,7 +527,7 @@ export default function Page() {
     <main className="min-h-screen bg-[#07080b] text-white">
       {/* Top Notice */}
       <div className="sticky top-0 z-40 border-b border-white/10 bg-[#07080b]/90 backdrop-blur">
-        <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-center">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-center">
           <div className="text-sm text-white/80">
             <span className="font-semibold text-lg text-white">50명 한정 29,900원</span>{" "}
             <span className="text-lg text-white/60">· 40명 마감 / 10명 남음 · 마감 후 정가 49,800원</span>
@@ -540,7 +540,7 @@ export default function Page() {
         {/* 영상 배경 */}
         <VideoBackground videoSrc="/videos/seoul.mp4" overlayOpacity={70} />
         
-        <div className="relative z-10 mx-auto max-w-5xl px-4 pt-14 pb-12 md:pt-20 md:pb-24 min-h-[600px] md:min-h-[700px] flex items-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-14 pb-12 md:pt-20 md:pb-24 min-h-[600px] md:min-h-[700px] flex items-center">
           <div
             ref={heroRef}
             className={`grid gap-10 md:grid-cols-[1.2fr_0.8fr] items-center w-full transition-all duration-1000 ${
@@ -599,7 +599,7 @@ export default function Page() {
       </section>
 
       {/* Hooking Section */}
-      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
         <div
           ref={hookingRef}
           className={`text-center w-full mx-auto transition-all duration-1000 ${
@@ -728,7 +728,7 @@ export default function Page() {
       </section>
 
       {/* Packages */}
-      <section id="packages" className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section id="packages" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
         <SectionTitle eyebrow="상품 구성" title="당신에게 맞는 분석을 선택하세요" />
 
         <div
@@ -802,9 +802,86 @@ export default function Page() {
         </div>
       </section>
 
+      {/* 운세 이미지 섹션 - 패키지와 Hooking 섹션 사이 */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-white/10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {/* 배우자운 */}
+          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <div className="aspect-[4/3] relative">
+              <Image
+                src="/images/lover.png"
+                alt="배우자운"
+                fill
+                className="object-cover rounded-2xl"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1">배우자운</h3>
+                <p className="text-sm text-white/80">인연과 결혼 타이밍</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 재물운 */}
+          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <div className="aspect-[4/3] relative">
+              <Image
+                src="/images/rich.png"
+                alt="재물운"
+                fill
+                className="object-cover rounded-2xl"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1">재물운</h3>
+                <p className="text-sm text-white/80">돈이 들어오는 시기</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 건강운 */}
+          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <div className="aspect-[4/3] relative">
+              <Image
+                src="/images/health.png"
+                alt="건강운"
+                fill
+                className="object-cover rounded-2xl"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1">건강운</h3>
+                <p className="text-sm text-white/80">건강 관리 시기</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 직장운 */}
+          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <div className="aspect-[4/3] relative">
+              <Image
+                src="/images/owner.png"
+                alt="직장운"
+                fill
+                className="object-cover rounded-2xl"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1">직장운</h3>
+                <p className="text-sm text-white/80">커리어와 일의 방향</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mid Hooking Section - 패키지와 FAQ 사이 */}
-      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
-        <div className="text-center max-w-3xl mx-auto">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
+          <div className="text-center max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-8 text-white">
             혹시 이런 생각 하고 계신가요?
           </h2>
@@ -853,7 +930,7 @@ export default function Page() {
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
         <SectionTitle eyebrow="자주 묻는 질문" title="FAQ" />
 
         <div
@@ -903,7 +980,7 @@ export default function Page() {
         {/* 영상 배경 */}
         <VideoBackground videoSrc="/videos/hwasung.mp4" overlayOpacity={75} />
         
-        <div className="relative z-10 mx-auto max-w-5xl px-4 py-16 md:py-24 text-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
           <div
             ref={ctaRef}
             className={`transition-all duration-1000 ${
@@ -938,8 +1015,8 @@ export default function Page() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#0f1014] px-4 py-12">
-        <div className="mx-auto max-w-5xl">
+      <footer className="border-t border-white/10 bg-[#0f1014] px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mx-auto max-w-7xl">
           {/* 법률 페이지 링크 */}
           <div className="text-center text-sm text-white/50 pb-6">
             <div className="flex flex-wrap justify-center gap-4">
