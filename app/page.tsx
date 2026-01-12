@@ -303,23 +303,23 @@ function OrderModal({
           {/* 패키지 정보 */}
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-3">
-              <span className="rounded-full bg-blue-100 text-blue-600 px-3 py-1 text-xs font-semibold">
+              <span className="rounded-full bg-blue-100 text-blue-600 px-3 py-1 text-sm md:text-base font-semibold">
                 {pkg.badge}
               </span>
-              {pkg.highlight && <span className="text-xl">⭐</span>}
+              {pkg.highlight && <span className="text-2xl md:text-3xl">⭐</span>}
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               {pkg.name}
             </h3>
-            <p className="text-gray-600 text-sm md:text-base">{pkg.desc}</p>
+            <p className="text-gray-600 text-base md:text-lg">{pkg.desc}</p>
           </div>
 
           {/* 포함 내용 */}
           <div className="mb-6 p-5 rounded-2xl bg-gray-50 border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-3 text-base">📋 포함 내용</h4>
+            <h4 className="font-semibold text-gray-900 mb-3 text-lg md:text-xl">📋 포함 내용</h4>
             <ul className="space-y-2">
               {pkg.points.map((point, i) => (
-                <li key={i} className="flex items-start gap-2 text-base text-gray-700">
+                <li key={i} className="flex items-start gap-2 text-lg md:text-xl text-gray-700">
                   <span className={`mt-0.5 flex-shrink-0 ${point.included ? 'text-blue-600' : 'text-gray-400'}`}>
                     {point.included ? '✓' : '✕'}
                   </span>
@@ -332,8 +332,8 @@ function OrderModal({
           {/* 결제 금액 */}
           <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 text-base">총 결제 금액</span>
-              <span className="text-3xl md:text-4xl font-bold text-blue-600">
+              <span className="text-gray-700 text-lg md:text-xl">총 결제 금액</span>
+              <span className="text-4xl md:text-5xl font-bold text-blue-600">
                 {pkg.price}
               </span>
             </div>
@@ -342,11 +342,11 @@ function OrderModal({
           {/* 개인정보 입력 폼 */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-4 text-base">📝 정보 입력</h4>
+              <h4 className="font-semibold text-gray-900 mb-4 text-lg md:text-xl">📝 정보 입력</h4>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
                     이름 *
                   </label>
                   <input
@@ -355,14 +355,14 @@ function OrderModal({
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-lg md:text-xl placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="홍길동"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
                       생년월일 *
                     </label>
                     <input
@@ -371,12 +371,12 @@ function OrderModal({
                       required
                       value={formData.birthDate}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-lg md:text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
                       양력/음력/윤달 *
                     </label>
                     <select
@@ -384,7 +384,7 @@ function OrderModal({
                       required
                       value={formData.calendarType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-lg md:text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="solar" className="bg-white">양력</option>
@@ -396,7 +396,7 @@ function OrderModal({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
                       생시 *
                     </label>
                     <select
@@ -404,7 +404,7 @@ function OrderModal({
                       required
                       value={formData.birthTime}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-lg md:text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="unknown" className="bg-white">모름</option>
@@ -424,7 +424,7 @@ function OrderModal({
                   </div>
 
                   <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
+                    <label className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
                       성별 *
                     </label>
                     <select
@@ -432,7 +432,7 @@ function OrderModal({
                       required
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-lg md:text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="" className="bg-white text-gray-500">선택</option>
                       <option value="male" className="bg-white">남성</option>
@@ -442,7 +442,7 @@ function OrderModal({
                 </div>
 
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
+                  <label className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
                     이메일 (PDF 수령용) *
                   </label>
                   <input
@@ -451,7 +451,7 @@ function OrderModal({
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-lg md:text-xl placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="example@email.com"
                   />
                 </div>
@@ -461,23 +461,23 @@ function OrderModal({
             {/* 제출 버튼 */}
             <button
               type="submit"
-              className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 touch-manipulation shadow-lg shadow-blue-600/30"
+              className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold text-xl md:text-2xl hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 touch-manipulation shadow-lg shadow-blue-600/30"
             >
               {pkg.price} 결제하기 →
             </button>
 
             {/* 안내 문구 */}
-            <p className="text-center text-sm text-gray-500">
-              버튼을 누르면 카카오톡으로 제공받을 PDF를 발송해드립니다.
-              <br />
-              입력하신 정보를 복사해 복사해서 사전에 신청해주세요.
-            </p>
-
-            <p className="text-center text-xs text-gray-500">
-              버튼을 누르면 카카오톡 채널로 이동합니다.
-              <br />
-              입력하신 정보를 복사해서 전달해주세요.
-            </p>
+            <div className="mt-6 p-5 rounded-2xl bg-blue-50 border border-blue-100">
+              <p className="text-center text-lg md:text-xl font-semibold text-gray-800 leading-relaxed">
+                기본 정보 입력 후 결제하시면
+                <br className="hidden md:block" />
+                <span className="md:hidden"> </span>
+                <span className="text-blue-600">24시간 이내</span>에 정밀 분석한 PDF 파일을 보내드립니다.
+              </p>
+              <p className="mt-3 text-center text-base md:text-lg text-gray-600 leading-relaxed">
+                💡 이메일로 발송되며, 다운로드 후 평생 보관하실 수 있습니다.
+              </p>
+            </div>
           </form>
         </div>
       </div>
@@ -580,15 +580,15 @@ export default function Page() {
                 </a>
               </div>
 
-              <p className="mt-4 text-sm md:text-base text-white/50">
+              <p className="mt-4 text-base md:text-lg text-white/70">
                 새벽 문의도 괜찮습니다. 편하실 때 메시지 주세요.
               </p>
             </div>
 
             {/* Trust card */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300">
-              <div className="text-lg font-semibold text-white/90">상담자 이력</div>
-              <ul className="mt-3 space-y-2 text-lg text-white/70">
+              <div className="text-lg md:text-xl font-semibold text-white">상담자 이력</div>
+              <ul className="mt-3 space-y-2 text-lg md:text-xl text-white/85">
                 <li>· 사주팔자 명리심리상담사 1급</li>
                 <li>· 가족심리상담사 1급</li>
                 <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
@@ -667,7 +667,7 @@ export default function Page() {
                   <div className="text-base font-semibold text-[#d4af37]">
                     {item.question}
                   </div>
-                  <p className="mt-3 text-lg leading-relaxed text-white/75 whitespace-pre-line">
+                  <p className="mt-3 text-lg md:text-xl leading-relaxed text-white/90 whitespace-pre-line">
                     "{item.text}"
                   </p>
                 </div>
@@ -699,7 +699,7 @@ export default function Page() {
               >
                 <div className="text-3xl mb-2">{item.icon}</div>
                 <div className="font-semibold text-white mb-1">{item.label}</div>
-                <div className="text-sm text-white/60">{item.desc}</div>
+                <div className="text-base md:text-lg text-white/80">{item.desc}</div>
               </div>
             ))}
           </div>
@@ -770,13 +770,13 @@ export default function Page() {
                 {pkg.name}
               </h3>
 
-              <p className="mt-2 text-base text-white/60 leading-relaxed whitespace-pre-line">
+              <p className="mt-2 text-base md:text-lg text-white/80 leading-relaxed whitespace-pre-line">
                 {pkg.desc}
               </p>
 
               <ul className="mt-4 space-y-2 flex-grow">
                 {pkg.points.map((point, j) => (
-                  <li key={j} className="flex items-start gap-2 text-base text-white/75">
+                  <li key={j} className="flex items-start gap-2 text-base md:text-lg text-white/90">
                     <span className={`mt-0.5 ${point.included ? 'text-[#d4af37]' : 'text-white/30'}`}>
                       {point.included ? '✓' : '✕'}
                     </span>
@@ -965,7 +965,7 @@ export default function Page() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="px-5 pb-5 text-white/75 leading-relaxed">
+                  <p className="px-5 pb-5 text-base md:text-lg text-white/90 leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
@@ -1007,7 +1007,7 @@ export default function Page() {
               </a>
             </div>
 
-            <p className="mt-6 text-sm text-white/60">
+            <p className="mt-6 text-base md:text-lg text-white/70">
               24시간 내 답변 · PDF 평생 소장 · 2026년 신년 특별가
             </p>
           </div>
@@ -1018,7 +1018,7 @@ export default function Page() {
       <footer className="border-t border-white/10 bg-[#0f1014] px-4 sm:px-6 lg:px-8 py-12">
         <div className="mx-auto max-w-7xl">
           {/* 법률 페이지 링크 */}
-          <div className="text-center text-sm text-white/50 pb-6">
+          <div className="text-center text-base md:text-lg text-white/70 pb-6">
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/terms" className="hover:text-white transition-colors">
                 이용약관
@@ -1048,15 +1048,15 @@ export default function Page() {
             </div>
 
             {/* 오른쪽: 사업자 정보 */}
-            <div className="flex-1 text-center md:text-right text-xs text-white/40 space-y-2">
+            <div className="flex-1 text-center md:text-right text-sm md:text-base text-white/60 space-y-2">
               <div className="space-y-1">
                 <p>대표자: [대표자명] | 사업자등록번호: [000-00-00000]</p>
                 <p>통신판매업 신고번호: [제0000-서울강남-00000호]</p>
                 <p>주소: [서울특별시 강남구 ○○로 ○○, ○○빌딩 ○층]</p>
                 <p>이메일: [contact@example.com] | 고객센터: 카카오톡 채널</p>
               </div>
-              <p className="mt-4 text-white/50">© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
-              <p className="text-[10px] text-yellow-500/60 mt-3">
+              <p className="mt-4 text-white/70">© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
+              <p className="text-xs md:text-sm text-yellow-500/70 mt-3">
                 ⚠️ 주의: 위 사업자 정보는 플레이스홀더입니다. 실제 사업자 정보로 반드시 교체하세요.
               </p>
             </div>

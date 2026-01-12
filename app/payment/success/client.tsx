@@ -73,7 +73,7 @@ export default function PaymentSuccessClient() {
       <div className="min-h-screen flex items-center justify-center bg-[#07080b] text-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#d4af37] mx-auto mb-6"></div>
-          <p className="text-xl text-white/80">결제를 확인하고 있습니다...</p>
+          <p className="text-2xl md:text-3xl text-white/80">결제를 확인하고 있습니다...</p>
         </div>
       </div>
     );
@@ -84,11 +84,11 @@ export default function PaymentSuccessClient() {
       <div className="min-h-screen flex items-center justify-center bg-[#07080b] text-white p-4">
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-6">❌</div>
-          <h1 className="text-3xl font-bold mb-4">결제 승인 실패</h1>
-          <p className="text-white/70 mb-8">{error}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">결제 승인 실패</h1>
+          <p className="text-lg md:text-xl text-white/70 mb-8">{error}</p>
           <Link
             href="/"
-            className="inline-block px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all"
+            className="inline-block px-6 py-4 bg-white/10 text-white rounded-xl font-semibold text-lg md:text-xl hover:bg-white/20 transition-all"
           >
             홈으로 돌아가기
           </Link>
@@ -104,8 +104,8 @@ export default function PaymentSuccessClient() {
         <h1 className="text-3xl md:text-4xl font-bold mb-4">결제가 완료되었습니다!</h1>
         
         <div className="my-8 p-6 rounded-2xl bg-white/5 border border-white/10 text-left">
-          <h2 className="text-lg font-semibold text-[#d4af37] mb-4">주문 정보</h2>
-          <div className="space-y-2 text-sm text-white/80">
+          <h2 className="text-xl md:text-2xl font-semibold text-[#d4af37] mb-4">주문 정보</h2>
+          <div className="space-y-2 text-base md:text-lg text-white/80">
             <div className="flex justify-between">
               <span>상품명:</span>
               <span className="font-semibold text-white">{packageName}</span>
@@ -152,22 +152,22 @@ export default function PaymentSuccessClient() {
               </svg>
             </div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
                 📧 PDF 리포트 전송 안내
               </h3>
-              <div className="space-y-2 text-base md:text-lg text-white/90 leading-relaxed">
+              <div className="space-y-2 text-lg md:text-xl text-white/90 leading-relaxed">
                 <p>
                   입력하신 <span className="font-bold text-[#d4af37]">{customerEmail}</span>로
                 </p>
-                <p className="text-xl md:text-2xl font-bold text-white">
+                <p className="text-2xl md:text-3xl font-bold text-white">
                   <span className="text-[#d4af37]">24시간 이내</span>에
                 </p>
-                <p className="text-lg md:text-xl font-semibold text-white">
+                <p className="text-xl md:text-2xl font-semibold text-white">
                   평생 소장할 수 있는 PDF 파일이 전송됩니다
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-white/20">
-                <p className="text-sm md:text-base text-white/70">
+                <p className="text-base md:text-lg text-white/70">
                   💡 PDF 파일은 이메일로 발송되며, 다운로드 후 평생 보관하실 수 있습니다.
                 </p>
               </div>
@@ -175,7 +175,7 @@ export default function PaymentSuccessClient() {
           </div>
         </div>
 
-        <p className="text-white/60 mb-8 text-sm md:text-base leading-relaxed">
+        <p className="text-white/60 mb-8 text-base md:text-lg leading-relaxed">
           추가 문의사항은 카카오톡 채널로 연락주세요.
         </p>
 
@@ -183,13 +183,13 @@ export default function PaymentSuccessClient() {
           <Link
             href="http://pf.kakao.com/_fECQn"
             target="_blank"
-            className="w-full px-6 py-3 bg-[#FEE500] text-[#3C1E1E] rounded-xl font-semibold hover:opacity-90 transition-all"
+            className="w-full px-6 py-4 bg-[#FEE500] text-[#3C1E1E] rounded-xl font-semibold text-lg md:text-xl hover:opacity-90 transition-all"
           >
             카카오톡 문의하기
           </Link>
           <Link
             href="/"
-            className="w-full px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all"
+            className="w-full px-6 py-4 bg-white/10 text-white rounded-xl font-semibold text-lg md:text-xl hover:bg-white/20 transition-all"
           >
             홈으로 돌아가기
           </Link>
