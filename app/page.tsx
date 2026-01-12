@@ -182,7 +182,7 @@ const faqs = [
   },
   {
     q: "PDF만 받는 건가요?",
-    a: "네, PDF 리포트 형태입니다. 하지만 읽고 추가로 궁금한 부분은 카카오톡으로 질문하실 수 있습니다. 프리미엄 패키지는 무제한 질문이 가능합니다.",
+    a: "네, PDF 리포트 형태입니다. 하지만 읽고 추가로 궁금한 부분은 카카오톡으로 질문하실 수 있습니다. 프리미엄 패키지는 10일 이내 무제한 질문이 가능합니다.",
   },
   {
     q: "신점이나 역술인과 다른가요?",
@@ -496,6 +496,7 @@ export default function Page() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<typeof packages[0] | null>(null);
+  const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -520,6 +521,16 @@ export default function Page() {
     setIsModalOpen(false);
     setSelectedPackage(null);
     // 모달 닫을 때 스크롤 복구
+    document.body.style.overflow = "auto";
+  };
+
+  const openSampleModal = () => {
+    setIsSampleModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeSampleModal = () => {
+    setIsSampleModalOpen(false);
     document.body.style.overflow = "auto";
   };
 
@@ -724,6 +735,177 @@ export default function Page() {
               당신의 인생 지도를 명확하게 정리해드립니다.
             </p>
           </div>
+
+          {/* 운세 이미지 섹션 - Hooking Section 내부로 이동 */}
+          <div className="mt-12">
+            <div className="text-center mb-6">
+              <div className="text-base font-semibold uppercase tracking-wider text-[#d4af37]">
+                분석 영역
+              </div>
+              <h3 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight text-white">
+                이런 운세를 확인할 수 있습니다
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {/* 배우자운 */}
+              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="/images/lover.png"
+                    alt="배우자운"
+                    fill
+                    className="object-cover rounded-2xl"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">배우자운</h3>
+                    <p className="text-sm text-white/80">인연과 결혼 타이밍</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 재물운 */}
+              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="/images/rich.png"
+                    alt="재물운"
+                    fill
+                    className="object-cover rounded-2xl"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">재물운</h3>
+                    <p className="text-sm text-white/80">돈이 들어오는 시기</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 건강운 */}
+              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="/images/health.png"
+                    alt="건강운"
+                    fill
+                    className="object-cover rounded-2xl"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">건강운</h3>
+                    <p className="text-sm text-white/80">건강 관리 시기</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 직장운 */}
+              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="/images/owner.png"
+                    alt="직장운"
+                    fill
+                    className="object-cover rounded-2xl"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">직장운</h3>
+                    <p className="text-sm text-white/80">커리어와 일의 방향</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 신뢰 배지 섹션 */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-white/10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
+            <div className="text-4xl mb-3">✅</div>
+            <h3 className="text-lg md:text-xl font-bold text-white mb-2">100% 환불 보장</h3>
+            <p className="text-sm md:text-base text-white/70">성의 없다고 느끼시면 전액 환불</p>
+          </div>
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
+            <div className="text-4xl mb-3">⚡</div>
+            <h3 className="text-lg md:text-xl font-bold text-white mb-2">24시간 내 발송</h3>
+            <p className="text-sm md:text-base text-white/70">결제 후 빠른 분석 및 전송</p>
+          </div>
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
+            <div className="text-4xl mb-3">📄</div>
+            <h3 className="text-lg md:text-xl font-bold text-white mb-2">PDF 평생 소장</h3>
+            <p className="text-sm md:text-base text-white/70">다운로드 후 평생 보관 가능</p>
+          </div>
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
+            <div className="text-4xl mb-3">🎯</div>
+            <h3 className="text-lg md:text-xl font-bold text-white mb-2">정통 만세력 기반</h3>
+            <p className="text-sm md:text-base text-white/70">신점이 아닌 객관적 분석</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 프로세스 설명 섹션 */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-white/10">
+        <div className="text-center mb-8">
+          <div className="text-sm font-semibold uppercase tracking-wider text-[#d4af37] mb-2">
+            간단한 3단계
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">
+            이렇게 진행됩니다
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37] flex items-center justify-center text-3xl font-bold text-black">
+              1
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-3">정보 입력</h3>
+            <p className="text-base md:text-lg text-white/80">
+              이름, 생년월일, 생시 등<br />
+              기본 정보를 입력해주세요
+            </p>
+          </div>
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37] flex items-center justify-center text-3xl font-bold text-black">
+              2
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-3">결제</h3>
+            <p className="text-base md:text-lg text-white/80">
+              안전한 결제 시스템으로<br />
+              간편하게 결제하세요
+            </p>
+          </div>
+          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37] flex items-center justify-center text-3xl font-bold text-black">
+              3
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-3">PDF 수령</h3>
+            <p className="text-base md:text-lg text-white/80">
+              24시간 이내 이메일로<br />
+              정밀 분석 PDF 전송
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* PDF 샘플 미리보기 섹션 */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 border-t border-white/10">
+        <div className="text-center">
+          <button
+            onClick={openSampleModal}
+            className="inline-flex items-center gap-3 rounded-2xl border-2 border-[#d4af37] bg-[#d4af37]/20 hover:bg-[#d4af37]/30 px-8 py-4 md:px-12 md:py-5 text-lg md:text-xl font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#d4af37]/20 hover:shadow-[#d4af37]/30"
+          >
+            <span className="text-2xl md:text-3xl">📄</span>
+            <span>PDF 샘플 미리보기</span>
+          </button>
+          <p className="mt-3 text-sm md:text-base text-white/60">
+            실제 받으실 PDF의 품질을 미리 확인하세요
+          </p>
         </div>
       </section>
 
@@ -800,82 +982,18 @@ export default function Page() {
             </div>
           ))}
         </div>
-      </section>
 
-      {/* 운세 이미지 섹션 - 패키지와 Hooking 섹션 사이 */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-white/10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {/* 배우자운 */}
-          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-            <div className="aspect-[4/3] relative">
-              <Image
-                src="/images/lover.png"
-                alt="배우자운"
-                fill
-                className="object-cover rounded-2xl"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-lg md:text-xl font-bold text-white mb-1">배우자운</h3>
-                <p className="text-sm text-white/80">인연과 결혼 타이밍</p>
-              </div>
-            </div>
-          </div>
-
-          {/* 재물운 */}
-          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-            <div className="aspect-[4/3] relative">
-              <Image
-                src="/images/rich.png"
-                alt="재물운"
-                fill
-                className="object-cover rounded-2xl"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-lg md:text-xl font-bold text-white mb-1">재물운</h3>
-                <p className="text-sm text-white/80">돈이 들어오는 시기</p>
-              </div>
-            </div>
-          </div>
-
-          {/* 건강운 */}
-          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-            <div className="aspect-[4/3] relative">
-              <Image
-                src="/images/health.png"
-                alt="건강운"
-                fill
-                className="object-cover rounded-2xl"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-lg md:text-xl font-bold text-white mb-1">건강운</h3>
-                <p className="text-sm text-white/80">건강 관리 시기</p>
-              </div>
-            </div>
-          </div>
-
-          {/* 직장운 */}
-          <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-            <div className="aspect-[4/3] relative">
-              <Image
-                src="/images/owner.png"
-                alt="직장운"
-                fill
-                className="object-cover rounded-2xl"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-lg md:text-xl font-bold text-white mb-1">직장운</h3>
-                <p className="text-sm text-white/80">커리어와 일의 방향</p>
-              </div>
-            </div>
-          </div>
+        {/* 패키지 섹션 직후 강력한 CTA */}
+        <div className="mt-12 text-center">
+          <a
+            href="#packages"
+            className="inline-block rounded-xl bg-[#d4af37] px-10 py-5 text-xl md:text-2xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation"
+          >
+            지금 바로 시작하기 →
+          </a>
+          <p className="mt-4 text-base md:text-lg text-white/70">
+            ⏰ 10자리 남음 · 마감 후 정가 49,800원
+          </p>
         </div>
       </section>
 
@@ -886,7 +1004,7 @@ export default function Page() {
             혹시 이런 생각 하고 계신가요?
           </h2>
 
-          <div className="space-y-4 mb-8">
+          <div className="space-y-6 mb-8">
             <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
               <p className="text-lg md:text-xl text-white/90 italic">
                 "나중에 해도 되지 않을까?"
@@ -916,14 +1034,20 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a
+              href="#packages"
+              className="inline-block rounded-xl bg-[#d4af37] px-8 py-4 text-lg md:text-xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation"
+            >
+              지금 바로 시작하기 →
+            </a>
             <Link
               href={CHAT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block rounded-xl bg-[#d4af37] px-8 py-4 text-lg md:text-xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation"
+              className="inline-block rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-lg md:text-xl font-semibold text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation"
             >
-              내 타이밍 확인하기 →
+              상담 문의하기
             </Link>
           </div>
         </div>
@@ -935,7 +1059,7 @@ export default function Page() {
 
         <div
           ref={faqRef}
-          className={`mt-8 space-y-4 transition-all duration-1000 ${
+          className={`mt-8 space-y-6 transition-all duration-1000 ${
             faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -946,11 +1070,11 @@ export default function Page() {
             >
               <button
                 onClick={() => toggleFAQ(i)}
-                className="flex w-full items-center justify-between p-5 text-left transition-all hover:bg-white/5 touch-manipulation"
+                className="flex w-full items-center justify-between p-5 md:p-6 text-left transition-all hover:bg-white/5 touch-manipulation"
               >
-                <span className="font-semibold text-white pr-4">{faq.q}</span>
+                <span className="font-semibold text-lg md:text-xl text-white pr-4">{faq.q}</span>
                 <span
-                  className={`text-2xl text-[#d4af37] transition-transform duration-300 flex-shrink-0 ${
+                  className={`text-2xl md:text-3xl text-[#d4af37] transition-transform duration-300 flex-shrink-0 ${
                     openFAQ === i ? "rotate-180" : ""
                   }`}
                 >
@@ -965,7 +1089,7 @@ export default function Page() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="px-5 pb-5 text-base md:text-lg text-white/90 leading-relaxed">
+                  <p className="px-5 md:px-6 pb-6 md:pb-7 text-lg md:text-xl text-white/90 leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
@@ -1067,6 +1191,55 @@ export default function Page() {
       {/* 모달 */}
       {selectedPackage && (
         <OrderModal package={selectedPackage} isOpen={isModalOpen} onClose={closeModal} />
+      )}
+
+      {/* PDF 샘플 모달 */}
+      {isSampleModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={closeSampleModal}
+        >
+          <div
+            className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 닫기 버튼 */}
+            <button
+              onClick={closeSampleModal}
+              className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all"
+            >
+              <span className="text-gray-600 text-2xl">×</span>
+            </button>
+
+            {/* 샘플 이미지 */}
+            <div className="p-8 overflow-y-auto max-h-[90vh]">
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">
+                프리미엄 종합 분석 PDF 샘플
+              </h3>
+              <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-gray-300">
+                <div className="text-center p-8">
+                  <div className="text-8xl mb-6">📄</div>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-700 mb-4">
+                    PDF 샘플 이미지
+                  </p>
+                  <p className="text-base md:text-lg text-gray-600">
+                    실제 샘플 이미지를 여기에 추가하세요
+                  </p>
+                  <p className="mt-4 text-sm text-gray-500">
+                    public/images/sample-pdf.png 또는 sample-pdf.jpg
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <p className="text-sm md:text-base text-gray-700 text-center">
+                  💡 실제 받으실 PDF는 이보다 훨씬 더 상세하고 전문적인 분석 내용을 포함합니다.
+                  <br />
+                  100페이지 이상의 깊이 있는 인생 지도를 제공해드립니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* 플로팅 채팅문의 버튼 */}
