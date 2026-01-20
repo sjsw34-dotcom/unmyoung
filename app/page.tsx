@@ -515,11 +515,16 @@ export default function Page() {
   return (
     <main className="min-h-screen bg-[#07080b] text-white">
       {/* Top Notice */}
-      <div className="sticky top-0 z-40 border-b border-white/10 bg-[#07080b]/90 backdrop-blur">
+      <div className="sticky top-0 z-40 border-b border-[#d4af37]/30 bg-gradient-to-r from-[#1a1410] via-[#0f0d0a] to-[#1a1410] backdrop-blur">
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-center">
-          <div className="text-sm text-white/80">
-            <span className="font-semibold text-lg text-white">50명 한정 29,900원</span>{" "}
-            <span className="text-lg text-white/60">· 40명 마감 / 10명 남음 · 마감 후 정가 49,800원</span>
+          <div className="text-center">
+            <span className="font-bold text-base md:text-lg text-[#d4af37]">50명 한정 29,900원</span>
+            <span className="text-white/40 mx-2 hidden sm:inline">·</span>
+            <br className="sm:hidden" />
+            <span className="text-sm md:text-base text-white/70">40명 마감 / 10명 남음</span>
+            <span className="text-white/40 mx-2 hidden sm:inline">·</span>
+            <br className="sm:hidden" />
+            <span className="text-sm md:text-base text-white/60">마감 후 정가 49,800원</span>
           </div>
         </div>
       </div>
@@ -545,19 +550,16 @@ export default function Page() {
 
               <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.15]">
               단순 운세가 아닙니다.
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-                <span className="text-[#d4af37]">당신의 '선택'을 바꾸는 타이밍 분석</span>입니다.
+                <br />
+                <span className="text-[#d4af37]">당신의 '선택'을 바꾸는<br className="sm:hidden" /> 타이밍 분석</span>입니다.
             </h1>
 
               <p className="mt-5 text-lg md:text-xl text-white/75 leading-relaxed">
-              요즘 들어 자꾸 같은 고민이 맴도시나요?
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-              뭔가 해야 할 것 같은데 확신이 없고, 기다려야 할 것 같은데 조급하고,
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-              결정을 내려야 하는데 자꾸 미루게 되고.
+              요즘 들어 자꾸 같은 고민이<br className="sm:hidden" /> 맴도시나요?
+                <br />
+              뭔가 해야 할 것 같은데 확신이 없고,<br className="sm:hidden" /> 기다려야 할 것 같은데 조급하고,
+                <br />
+              결정을 내려야 하는데<br className="sm:hidden" /> 자꾸 미루게 되고.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -601,14 +603,13 @@ export default function Page() {
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
-            고민만 하다 <span className="text-[#d4af37]">타이밍을 놓치지 마세요</span>
+            고민만 하다 <br className="sm:hidden" /><span className="text-[#d4af37]">타이밍을 놓치지 마세요</span>
           </h2>
 
           <p className="mt-6 text-lg md:text-xl text-white/75 leading-relaxed">
-            "그때 결정했더라면..."이라는 후회를 하지 않으려면,
-            <br className="hidden md:block" />
-            <span className="md:hidden"> </span>
-            지금 당신에게 필요한 것은 <span className="text-white font-semibold">정확한 타이밍과 방향</span>입니다.
+            "그때 결정했더라면..."이라는<br className="sm:hidden" /> 후회를 하지 않으려면,
+            <br />
+            지금 당신에게 필요한 것은 <br className="sm:hidden" /><span className="text-white font-semibold">정확한 타이밍과 방향</span>입니다.
           </p>
 
           {/* 구분선 */}
@@ -707,10 +708,9 @@ export default function Page() {
 
           <div className="mt-10 p-6 rounded-2xl bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 border border-[#d4af37]/20">
             <p className="text-base md:text-lg text-white/90 leading-relaxed">
-              <span className="font-semibold text-[#d4af37]">100페이지 이상의 상세한 PDF 리포트</span>로
-              <br className="hidden md:block" />
-              <span className="md:hidden"> </span>
-              당신의 인생 지도를 명확하게 정리해드립니다.
+              <span className="font-semibold text-[#d4af37]">100페이지 이상의<br className="sm:hidden" /> 상세한 PDF 리포트</span>로
+              <br />
+              당신의 인생 지도를<br className="sm:hidden" /> 명확하게 정리해드립니다.
             </p>
           </div>
         </div>
@@ -812,9 +812,9 @@ export default function Page() {
           </div>
 
           <p className="text-xl md:text-2xl text-white/80 leading-relaxed mb-8">
-            근데요, 그 <span className="text-[#d4af37] font-semibold">'나중'</span>이 언제인지
+            근데요, 그 <span className="text-[#d4af37] font-semibold">'나중'</span>이<br className="sm:hidden" /> 언제인지 아는 게
             <br />
-            아는 게 사주 분석이에요.
+            사주 분석이에요.
           </p>
 
           <div className="border-t border-white/20 my-10"></div>
@@ -900,14 +900,19 @@ export default function Page() {
             }`}
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-              당신의 인생, 이제 <span className="text-[#d4af37]">명확한 방향</span>으로
-              <br className="hidden md:block" />
-              <span className="md:hidden"> </span>
+              당신의 인생, 이제 <br className="sm:hidden" /><span className="text-[#d4af37]">명확한 방향</span>으로
+              <br />
               선택하세요
             </h2>
 
-            <p className="mt-6 text-xl md:text-2xl text-white/80">
-              50명 한정 29,900원 · 10명 남음 · 마감 후 정가 49,800원
+            <p className="mt-6 text-lg md:text-xl text-white/80">
+              <span className="text-[#d4af37] font-semibold">50명 한정 29,900원</span>
+              <br className="sm:hidden" />
+              <span className="sm:hidden"> </span>
+              <span className="text-white/70">· 10명 남음 ·</span>
+              <br className="sm:hidden" />
+              <span className="sm:hidden"> </span>
+              <span className="text-white/60">마감 후 정가 49,800원</span>
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -929,8 +934,8 @@ export default function Page() {
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[#0f1014] px-4 py-8">
         <div className="mx-auto max-w-5xl text-center text-sm text-white/50">
-          <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
-          <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
+          <p>© 2026 운명테라피.<br className="sm:hidden" /> 정통 명리 기반 사주 분석 서비스.</p>
+          <p className="mt-2">문의: 카카오톡 채널 ·<br className="sm:hidden" /> 24시간 답변</p>
         </div>
       </footer>
 
