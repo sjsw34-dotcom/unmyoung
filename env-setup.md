@@ -96,6 +96,9 @@ TOSS_SECRET_KEY=live_sk_YOUR_ACTUAL_SECRET_KEY
 NEXT_PUBLIC_SUPABASE_URL=https://hgsjxrrzxpfcwwbizxsl.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_actual_service_role_key
+
+# Google Sheets (선택사항)
+NEXT_PUBLIC_GOOGLE_SHEET_URL=https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
 ```
 
 ---
@@ -117,6 +120,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_actual_service_role_key
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://...supabase.co` | All |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhb...` | All |
 | `SUPABASE_SERVICE_ROLE_KEY` | `eyJhb...` (Sensitive ✓) | Production |
+| `NEXT_PUBLIC_GOOGLE_SHEET_URL` | `https://script.google.com/...` | Production (선택) |
 
 ### 환경별 설정
 
@@ -176,6 +180,12 @@ SUPABASE_SERVICE_ROLE_KEY=your_actual_service_role_key
 - **설명**: Sentry 에러 모니터링 DSN
 - **예시**: `https://xxxxx@xxxxx.ingest.sentry.io/xxxxx`
 - **용도**: 프로덕션 에러 추적 (선택사항)
+
+#### `NEXT_PUBLIC_GOOGLE_SHEET_URL`
+- **설명**: Google Apps Script 웹 앱 배포 URL
+- **예시**: `https://script.google.com/macros/s/AKfycbw-.../exec`
+- **용도**: 주문 정보를 구글 시트에 자동 저장 (선택사항)
+- **설정 방법**: `google-apps-script/SETUP.md` 참고
 
 ---
 

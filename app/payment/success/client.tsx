@@ -28,7 +28,36 @@ export default function PaymentSuccessClient() {
 
   // 다인 분석 데이터 파싱
   const personCount = personCountStr ? parseInt(personCountStr) : 1;
-  const personsData: PersonData[] = personsDataStr ? JSON.parse(decodeURIComponent(personsDataStr)) : [];
+  let personsData: PersonData[] = [];
+  
+  if (personsDataStr) {
+    try {
+      personsData = JSON.parse(decodeURIComponent(personsDataStr));
+    } catch (e) {
+      console.error('personsData 파싱 오류:', e);
+    }
+  }
+
+  // personsData가 비어있으면 URL 파라미터에서 개별 정보로 구성
+  if (personsData.length === 0) {
+    const name = searchParams.get('name');
+    const birthDate = searchParams.get('birthDate');
+    const calendarType = searchParams.get('calendarType');
+    const birthTime = searchParams.get('birthTime');
+    const gender = searchParams.get('gender');
+    const email = searchParams.get('email');
+    
+    if (name && birthDate && calendarType && birthTime && gender && email) {
+      personsData = [{
+        name,
+        birthDate,
+        calendarType,
+        birthTime,
+        gender,
+        email,
+      }];
+    }
+  }
 
   // 첫 번째 사람 정보 (표시용)
   const firstPerson = personsData[0] || {};
@@ -59,6 +88,8 @@ export default function PaymentSuccessClient() {
             calendarType: firstPerson.calendarType,
             birthTime: firstPerson.birthTime,
             gender: firstPerson.gender,
+            personCount: personCount,
+            personsData: personsData,
           }),
         });
 
@@ -68,17 +99,19 @@ export default function PaymentSuccessClient() {
           throw new Error(data.message || '결제 승인에 실패했습니다.');
         }
 
-        // 결제 승인 성공 후 구글 시트로 데이터 전송
-        await sendToGoogleSheet({
-          orderId,
-          packageName: packageName || '',
-          amount: parseInt(amount || '0'),
-          personCount,
-          personsData,
-        });
-
         // 성공
         setIsConfirming(false);
+
+        // 결제 승인 성공 후 구글 시트로 데이터 전송 (비동기, 실패해도 사용자에게는 성공 표시)
+        sendToGoogleSheet({
+          orderId: data.data?.orderId || orderId,
+          packageName: packageName || '',
+          amount: data.data?.totalAmount || parseInt(amount || '0'),
+          personCount,
+          personsData,
+        }).catch((err) => {
+          console.error('구글 시트 전송 오류 (결제는 성공):', err);
+        });
       } catch (err) {
         console.error('결제 승인 오류:', err);
         setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');

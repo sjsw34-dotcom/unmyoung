@@ -7,10 +7,6 @@ import { useEffect, useRef, useState } from "react";
 
 const CHAT_URL = "http://pf.kakao.com/_fECQn"; // 운명테라피 카카오톡 채널
 
-// 환경 변수는 파일 최상단에서 상수로 선언 (빌드 시 인라인됨)
-const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
-
 // 스크롤 애니메이션을 위한 커스텀 훅
 function useFadeIn() {
   const [isVisible, setIsVisible] = useState(false);
@@ -215,6 +211,7 @@ function OrderModal({
   onClose: () => void;
 }) {
   const [personCount, setPersonCount] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [formDataList, setFormDataList] = useState([{
     name: "",
     birthDate: "",
@@ -273,49 +270,79 @@ function OrderModal({
     // 입력 검증 - 모든 사람의 정보 확인
     for (let i = 0; i < formDataList.length; i++) {
       const formData = formDataList[i];
-      if (!formData.name || !formData.birthDate || !formData.gender || !formData.email || !formData.calendarType || !formData.birthTime) {
+      if (
+        !formData.name ||
+        !formData.birthDate ||
+        !formData.gender ||
+        !formData.email ||
+        !formData.calendarType ||
+        !formData.birthTime
+      ) {
         alert(`${i + 1}번째 분석 대상자의 모든 항목을 입력해주세요.`);
         return;
       }
     }
 
-    try {
-      // 토스페이먼츠 결제 위젯 로드
-      const { loadTossPayments } = await import('@tosspayments/payment-sdk');
+    setIsLoading(true);
 
-      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
+    try {
+      // (임시) 토스 결제 대신 구글 시트로 기본 정보만 저장
+      const googleSheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL;
+
+      if (!googleSheetUrl) {
+        alert("구글 시트 URL이 설정되지 않았습니다.\n\n환경 변수 NEXT_PUBLIC_GOOGLE_SHEET_URL을 확인해주세요.\n\n현재 값: " + (googleSheetUrl || "없음"));
+        setIsLoading(false);
+        return;
+      }
 
       // 주문 ID 생성 (고유값)
       const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
       // 프리미엄 패키지이고 인원별 가격이 있으면 해당 가격 사용, 아니면 패키지 가격 사용
-      const amount = pkg.highlight && PRICING[personCount as keyof typeof PRICING]
-        ? PRICING[personCount as keyof typeof PRICING].price
-        : parseInt(pkg.price.replace(/,|원/g, ''));
+      const amount =
+        pkg.highlight && PRICING[personCount as keyof typeof PRICING]
+          ? PRICING[personCount as keyof typeof PRICING].price
+          : parseInt(pkg.price.replace(/,|원/g, ""));
 
-      // 결제 요청
-      const appUrl = APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      // 여러 사람의 정보를 그대로 전송 (Google Apps Script에서 personCount에 따라 1/다인 처리)
+      const personsData = formDataList;
 
-      // 여러 사람의 정보를 JSON으로 인코딩
-      const personsData = JSON.stringify(formDataList);
-
-      await tossPayments.requestPayment('카드', {
-        amount,
-        orderId,
-        orderName: `${pkg.name} (${personCount}인)`,
-        customerName: formDataList[0].name,
-        customerEmail: formDataList[0].email,
-        successUrl: `${appUrl}/payment/success?personsData=${encodeURIComponent(personsData)}&personCount=${personCount}&package=${encodeURIComponent(pkg.name)}`,
-        failUrl: `${appUrl}/payment/fail`,
+      const response = await fetch(googleSheetUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          packageName: pkg.name,
+          amount,
+          personCount,
+          personsData,
+        }),
       });
 
-    } catch (error) {
-      console.error('결제 오류:', error);
-      if (error instanceof Error) {
-        alert(`결제 중 오류가 발생했습니다: ${error.message}`);
-      } else {
-        alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("구글 시트 저장 실패 (HTTP):", response.status, errorText);
+        throw new Error(`서버 오류 (${response.status}): ${errorText}`);
       }
+
+      const result = await response.json();
+      console.log("구글 시트 응답:", result);
+
+      if (result.success) {
+        alert("✅ 기본 정보가 정상적으로 접수되었습니다.\n\n구글 시트 저장 완료!");
+        onClose();
+      } else {
+        console.error("구글 시트 저장 실패:", result.message);
+        alert(`❌ 정보 저장 중 오류가 발생했습니다.\n\n오류 내용: ${result.message || "알 수 없는 오류"}\n\n잠시 후 다시 시도해주세요.`);
+      }
+    } catch (error) {
+      console.error("구글 시트 전송 오류:", error);
+      const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류";
+      alert(`❌ 정보 저장 중 오류가 발생했습니다.\n\n오류 내용: ${errorMessage}\n\n브라우저 콘솔(F12)을 확인해주세요.`);
+    } finally {
+      setIsLoading(false);
     }
   };
 

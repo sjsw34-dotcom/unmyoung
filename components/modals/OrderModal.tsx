@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+// 토스페이먼츠 관련 코드는 제거됨 (현재는 구글 시트로만 저장)
 
 // 패키지 타입 정의
 interface Package {
@@ -158,42 +157,70 @@ export function OrderModal({
     setIsLoading(true);
 
     try {
-      // 토스페이먼츠 결제 위젯 로드
-      const { loadTossPayments } = await import('@tosspayments/payment-sdk');
+      // (임시) 토스 결제 대신 구글 시트로 기본 정보만 저장
+      const googleSheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL;
 
-      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
+      if (!googleSheetUrl) {
+        alert("구글 시트 URL이 설정되지 않았습니다.\n\n환경 변수 NEXT_PUBLIC_GOOGLE_SHEET_URL을 확인해주세요.\n\n현재 값: " + (googleSheetUrl || "없음"));
+        setIsLoading(false);
+        return;
+      }
 
       // 주문 ID 생성 (고유값)
       const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
       // 금액 추출 (쉼표와 '원' 제거)
-      const amount = parseInt(pkg.price.replace(/,|원/g, ''));
+      const amount = parseInt(pkg.price.replace(/,|원/g, ""));
 
-      // 결제 요청
-      const appUrl = APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      // 현재는 1인 기준으로만 저장
+      const personCount = 1;
+      const personsData = [
+        {
+          name: formData.name,
+          birthDate: formData.birthDate,
+          calendarType: formData.calendarType,
+          birthTime: formData.birthTime,
+          gender: formData.gender,
+          email: formData.email,
+        },
+      ];
 
-      await tossPayments.requestPayment('카드', {
-        amount,
-        orderId,
-        orderName: pkg.name,
-        customerName: formData.name,
-        customerEmail: formData.email,
-        successUrl: `${appUrl}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&calendarType=${formData.calendarType}&birthTime=${encodeURIComponent(formData.birthTime)}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
-        failUrl: `${appUrl}/payment/fail`,
+      console.log("구글 시트 저장 시작:", { googleSheetUrl, personCount, personsData });
+
+      const response = await fetch(googleSheetUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          packageName: pkg.name,
+          amount,
+          personCount,
+          personsData,
+        }),
       });
 
-    } catch (error) {
-      console.error('결제 오류:', error);
-      if (error instanceof Error) {
-        // 사용자 취소는 알림 없이 처리
-        if (error.message.includes('취소') || error.message.includes('cancel')) {
-          setIsLoading(false);
-          return;
-        }
-        alert(`결제 중 오류가 발생했습니다: ${error.message}`);
-      } else {
-        alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("구글 시트 저장 실패 (HTTP):", response.status, errorText);
+        throw new Error(`서버 오류 (${response.status}): ${errorText}`);
       }
+
+      const result = await response.json();
+      console.log("구글 시트 응답:", result);
+
+      if (result.success) {
+        alert("✅ 기본 정보가 정상적으로 접수되었습니다.\n\n구글 시트 저장 완료!");
+        onClose();
+      } else {
+        console.error("구글 시트 저장 실패:", result.message);
+        alert(`❌ 정보 저장 중 오류가 발생했습니다.\n\n오류 내용: ${result.message || "알 수 없는 오류"}\n\n잠시 후 다시 시도해주세요.`);
+      }
+    } catch (error) {
+      console.error("구글 시트 전송 오류:", error);
+      const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류";
+      alert(`❌ 정보 저장 중 오류가 발생했습니다.\n\n오류 내용: ${errorMessage}\n\n브라우저 콘솔(F12)을 확인해주세요.`);
     } finally {
       setIsLoading(false);
     }

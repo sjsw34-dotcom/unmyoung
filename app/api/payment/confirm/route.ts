@@ -210,6 +210,63 @@ export async function POST(request: NextRequest) {
       package_name: sanitizedPackageName,
     }));
 
+    // 구글 시트에 주문 정보 저장 (비동기, 실패해도 결제는 성공)
+    const googleSheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL;
+    if (googleSheetUrl) {
+      try {
+        // personCount와 personsData는 body에서 가져오거나 기본값 사용
+        const personCount = body.personCount || 1;
+        let personsData = body.personsData;
+        
+        // personsData가 없거나 배열이 아니면 기본값 생성
+        if (!personsData || !Array.isArray(personsData) || personsData.length === 0) {
+          personsData = [{
+            name: sanitizedName,
+            birthDate: birthDate || '',
+            calendarType: calendarType || '',
+            birthTime: sanitizedBirthTime || '',
+            gender: gender || '',
+            email: customerEmail || '',
+          }];
+        }
+
+        const googleSheetData = {
+          orderId: data.orderId,
+          packageName: sanitizedPackageName,
+          amount: data.totalAmount,
+          personCount: personCount,
+          personsData: personsData,
+        };
+
+        console.log('[Payment] 구글 시트 저장 시도:', {
+          orderId: data.orderId,
+          personCount: personCount,
+          personsDataCount: personsData.length,
+        });
+
+        const googleSheetResponse = await fetch(googleSheetUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(googleSheetData),
+        });
+
+        const googleSheetResult = await googleSheetResponse.json();
+        
+        if (googleSheetResult.success) {
+          console.log('[Payment] 구글 시트 저장 성공:', data.orderId);
+        } else {
+          console.warn('[Payment] 구글 시트 저장 실패 (결제는 성공):', googleSheetResult.message);
+        }
+      } catch (err) {
+        console.error('[Payment] 구글 시트 저장 오류 (결제는 성공):', err);
+        // 구글 시트 저장 실패해도 결제는 성공했으므로 계속 진행
+      }
+    } else {
+      console.warn('[Payment] 구글 시트 URL이 설정되지 않았습니다.');
+    }
+
     // TODO: 이메일 발송 (선택사항)
     // await sendConfirmationEmail(customerEmail, { packageName, orderName: data.orderName });
 

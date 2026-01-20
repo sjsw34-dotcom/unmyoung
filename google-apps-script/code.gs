@@ -136,61 +136,80 @@ function addSinglePersonOrder(sheet, data) {
 
 /**
  * 다인 분석 주문 추가
+ * 1인은 한 행에, 2인 이상은 첫 번째 사람은 한 행에, 나머지는 하위 행(1-1, 1-2)에 저장
  */
 function addMultiPersonOrder(sheet, data) {
   const lastRow = sheet.getLastRow();
-  const orderNumber = lastRow; // 헤더 제외한 순번
+  const baseOrderNumber = lastRow; // 헤더 제외한 순번 (첫 번째 사람의 번호)
 
   const timestamp = new Date();
   const personCount = data.personCount || data.personsData.length;
 
-  // 기본 정보
-  let row = [
-    orderNumber,                           // 번호
+  // 첫 번째 사람 정보 (메인 행)
+  const firstPerson = data.personsData[0];
+  const firstRow = [
+    baseOrderNumber,                      // 번호 (예: 1)
     Utilities.formatDate(timestamp, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss'), // 주문일시
-    data.orderId || '',                    // 주문ID
-    data.packageName || '',                // 패키지
-    data.amount || '',                     // 결제금액
-    personCount                            // 분석인원
+    data.orderId || '',                   // 주문ID
+    data.packageName || '',               // 패키지
+    data.amount || '',                    // 결제금액
+    personCount,                          // 분석인원
+    firstPerson.name || '',                // 이름
+    firstPerson.birthDate || '',           // 생년월일
+    getCalendarTypeText(firstPerson.calendarType), // 양력/음력
+    firstPerson.birthTime || '',          // 생시
+    getGenderText(firstPerson.gender),    // 성별
+    firstPerson.email || '',              // 이메일
+    '결제완료',                           // 결제상태
+    '대기중',                             // 처리상태
+    ''                                    // 비고
   ];
 
-  // 각 분석 대상자 정보 추가
-  data.personsData.forEach((person, index) => {
-    row.push(
-      `[${index + 1}] ${person.name || ''}`,           // 이름
-      person.birthDate || '',                          // 생년월일
-      getCalendarTypeText(person.calendarType),        // 양력/음력
-      person.birthTime || '',                          // 생시
-      getGenderText(person.gender),                    // 성별
-      person.email || ''                               // 이메일
-    );
-  });
+  sheet.appendRow(firstRow);
+  const firstRowNum = sheet.getLastRow();
 
-  // 결제상태, 처리상태, 비고
-  row.push('결제완료', '대기중', '');
+  // 첫 번째 행 스타일 적용
+  const firstRange = sheet.getRange(firstRowNum, 1, 1, firstRow.length);
+  sheet.getRange(firstRowNum, 1).setBackground('#e8f0fe');
+  firstRange.setBorder(true, true, true, true, true, true);
+  sheet.getRange(firstRowNum, 1, 1, 6).setHorizontalAlignment('center');
 
-  sheet.appendRow(row);
+  // 두 번째 사람부터 하위 행으로 추가 (1-1, 1-2 형식)
+  for (let i = 1; i < personCount; i++) {
+    const person = data.personsData[i];
+    const subOrderNumber = `${baseOrderNumber}-${i}`; // 예: 1-1, 1-2
 
-  // 방금 추가된 행에 스타일 적용
-  const newRow = sheet.getLastRow();
-  const range = sheet.getRange(newRow, 1, 1, row.length);
+    const subRow = [
+      subOrderNumber,                     // 번호 (예: 1-1, 1-2)
+      '',                                  // 주문일시 (첫 번째와 동일하므로 비움)
+      '',                                  // 주문ID (첫 번째와 동일하므로 비움)
+      '',                                  // 패키지 (첫 번째와 동일하므로 비움)
+      '',                                  // 결제금액 (첫 번째와 동일하므로 비움)
+      '',                                  // 분석인원 (첫 번째와 동일하므로 비움)
+      person.name || '',                   // 이름
+      person.birthDate || '',              // 생년월일
+      getCalendarTypeText(person.calendarType), // 양력/음력
+      person.birthTime || '',              // 생시
+      getGenderText(person.gender),        // 성별
+      person.email || '',                  // 이메일
+      '',                                  // 결제상태 (첫 번째와 동일하므로 비움)
+      '',                                  // 처리상태 (첫 번째와 동일하므로 비움)
+      ''                                   // 비고
+    ];
 
-  // 번호 열 하이라이트
-  sheet.getRange(newRow, 1).setBackground('#e8f0fe');
+    sheet.appendRow(subRow);
+    const subRowNum = sheet.getLastRow();
 
-  // 분석 대상자별 색상 구분 (옵션)
-  let colorIndex = 0;
-  const colors = ['#fff3cd', '#d1ecf1', '#d4edda', '#f8d7da'];
-
-  for (let i = 0; i < personCount; i++) {
-    const startCol = 7 + (i * 6); // 이름부터 시작
-    if (startCol + 5 <= row.length) {
-      sheet.getRange(newRow, startCol, 1, 6).setBackground(colors[i % colors.length]);
-    }
+    // 하위 행 스타일 적용
+    const subRange = sheet.getRange(subRowNum, 1, 1, subRow.length);
+    sheet.getRange(subRowNum, 1).setBackground('#fff3cd'); // 노란색으로 구분
+    subRange.setBorder(true, true, true, true, true, true);
+    sheet.getRange(subRowNum, 1).setHorizontalAlignment('center');
+    
+    // 하위 행의 이름~이메일 열에 배경색 적용 (구분을 위해)
+    const colors = ['#d1ecf1', '#d4edda', '#f8d7da'];
+    sheet.getRange(subRowNum, 7, 1, 6).setBackground(colors[(i - 1) % colors.length]);
   }
-
-  // 테두리 추가
-  range.setBorder(true, true, true, true, true, true);
 }
 
 /**
@@ -269,6 +288,17 @@ function testAddOrder() {
     createHeaders(sheet);
   }
 
+  // 테스트 데이터를 3명으로 변경하여 하위 행 테스트
+  testData.personCount = 3;
+  testData.personsData.push({
+    name: '이철수',
+    birthDate: '1988-05-20',
+    calendarType: 'solar',
+    birthTime: '인시 (03:30-05:30)',
+    gender: 'male',
+    email: 'test3@example.com'
+  });
+
   addMultiPersonOrder(sheet, testData);
-  Logger.log('테스트 데이터 추가 완료');
+  Logger.log('테스트 데이터 추가 완료 (3명 테스트)');
 }
