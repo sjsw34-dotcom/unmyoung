@@ -3,14 +3,476 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// 분리된 컴포넌트 import
-import { useFadeIn } from "@/hooks/useFadeIn";
-import { VideoBackground } from "@/components/common/VideoBackground";
-import { SectionTitle } from "@/components/common/SectionTitle";
-import { OrderModal } from "@/components/modals/OrderModal";
-import { packages, faqs, CHAT_URL, PROMO } from "@/lib/data";
+const CHAT_URL = "http://pf.kakao.com/_fECQn"; // 운명테라피 카카오톡 채널
+
+// 환경 변수는 파일 최상단에서 상수로 선언 (빌드 시 인라인됨)
+const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
+// 스크롤 애니메이션을 위한 커스텀 훅
+function useFadeIn() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+}
+
+// 비디오 배경 컴포넌트
+function VideoBackground({
+  videoSrc,
+  overlayOpacity = 60,
+  className = "",
+}: {
+  videoSrc: string;
+  overlayOpacity?: number;
+  className?: string;
+}) {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // 비디오 강제 재생 시도
+    if (videoRef.current) {
+      videoRef.current.play().catch((err) => {
+        console.log("영상 자동 재생 실패:", err);
+      });
+    }
+  }, []);
+
+  return (
+    <div className={`absolute inset-0 overflow-hidden ${className}`}>
+      {/* 배경 영상 - 에러나 로딩 실패 시 숨김 */}
+      {!hasError && (
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          onLoadedData={() => {
+            console.log(`✅ 영상 로딩 완료: ${videoSrc}`);
+            setIsVideoLoaded(true);
+          }}
+          onError={(e) => {
+            console.error(`❌ 영상 로딩 실패: ${videoSrc}`, e);
+            setHasError(true);
+          }}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            isVideoLoaded ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+      )}
+
+      {/* 폴백 배경 (영상 로딩 중 또는 에러 시 표시) */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-b from-[#07080b] via-[#0f1014] to-[#1a1a1f] transition-opacity duration-1000 ${
+          isVideoLoaded && !hasError ? "opacity-0" : "opacity-100"
+        }`}
+      />
+
+      {/* 오버레이 (텍스트 가독성) */}
+      <div
+        className="absolute inset-0 z-[1]"
+        style={{
+          background: `linear-gradient(to bottom, rgba(7, 8, 11, ${overlayOpacity / 100}), rgba(7, 8, 11, ${
+            overlayOpacity / 100 + 0.2
+          }))`,
+        }}
+      />
+    </div>
+  );
+}
+
+const packages = [
+  {
+    name: "신년운세",
+    price: "19,900원",
+    badge: "2026 집중",
+    desc: "월별 흐름 + 중요한 달 + 조심 포인트\n+ 활용 전략",
+    points: [
+      { text: "2026 월별 운세", included: true },
+      { text: "사주 핵심 요약", included: true },
+      { text: "운세 총평", included: true },
+      { text: "재물 흐름", included: true },
+      { text: "직업·사업", included: true },
+      { text: "연애·가정", included: true },
+      { text: "건강 관리", included: true },
+      { text: "인간관계·귀인", included: true },
+      { text: "주의점·가이드", included: true },
+    ],
+  },
+  {
+    name: "기본 분석",
+    price: "9,800원",
+    badge: "입문/빠른 파악",
+    desc: "5페이지 분량 · 내 사주 구조 타입을\n빠르게 파악하고 싶은 분",
+    points: [
+      { text: "인생 전반 상승·하강 흐름", included: false },
+      { text: "연애운·결혼운", included: false },
+      { text: "돈이 들어오는 시기와 방향", included: false },
+      { text: "나에게 맞는 일의 형태", included: false },
+      { text: "건강 주의 시기", included: false },
+      { text: "향후 10년 대운 분석", included: false },
+      { text: "추가 질문 무제한 + PDF 평생 소장", included: false },
+      { text: "2인 이상 신청 시 궁합 분석 무료", included: false },
+    ],
+  },
+  {
+    name: "프리미엄 종합 분석",
+    price: "29,900원",
+    badge: "100페이지+",
+    desc: "인생 전체 흐름을 한 번에\n정리하고 싶은 분",
+    points: [
+      { text: "인생 전반 상승·하강 흐름", included: true },
+      { text: "연애운·결혼운", included: true },
+      { text: "돈이 들어오는 시기와 방향", included: true },
+      { text: "나에게 맞는 일의 형태", included: true },
+      { text: "건강 주의 시기", included: true },
+      { text: "향후 10년 대운 분석", included: true },
+      { text: "추가 질문 무제한 + PDF 평생 소장", included: true },
+      { text: "2인 이상 신청 시 궁합 분석 무료", included: true },
+    ],
+    highlight: true,
+  },
+];
+
+const faqs = [
+  {
+    q: "정말 환불해주나요?",
+    a: '네, "성의 없다"고 느끼시면 100% 전액 환불해드립니다. 다만 지금까지 한 번도 환불 요청이 없었습니다. 그만큼 퀄리티에 자신 있습니다.',
+  },
+  {
+    q: "얼마나 걸리나요?",
+    a: "결제 후 24~48시간 내로 PDF를 이메일로 보내드립니다. 급하시면 말씀해주세요. 최대한 빠르게 작업해드립니다.",
+  },
+  {
+    q: "PDF만 받는 건가요?",
+    a: "네, PDF 리포트 형태입니다. 하지만 읽고 추가로 궁금한 부분은 카카오톡으로 질문하실 수 있습니다. 프리미엄 패키지는 무제한 질문이 가능합니다.",
+  },
+  {
+    q: "신점이나 역술인과 다른가요?",
+    a: "네, 만세력 기반 정통 명리 분석입니다. 신점처럼 '대박 난다' 같은 막연한 이야기가 아니라, 사주 구조를 객관적으로 해석하고, 언제·무엇을·어떻게 해야 하는지 구체적으로 정리해드립니다.",
+  },
+  {
+    q: "가족이나 연인 것도 함께 받고 싶어요.",
+    a: "2인 이상 신청하시면 궁합 분석을 무료로 추가해드립니다. 각자의 사주와 함께, 두 사람의 타이밍이 어떻게 맞물리는지까지 분석해드립니다.",
+  },
+];
+
+function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <div className="text-center">
+      <div className="text-sm font-semibold uppercase tracking-wider text-[#d4af37]">
+        {eyebrow}
+      </div>
+      <h2 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight text-white">
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+// 모달 컴포넌트
+function OrderModal({
+  package: pkg,
+  isOpen,
+  onClose,
+}: {
+  package: typeof packages[0];
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  const [formData, setFormData] = useState({
+    name: "",
+    birthDate: "",
+    calendarType: "", // 양력/음력/윤달
+    birthTime: "", // 생시
+    gender: "",
+    email: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // 입력 검증
+    if (!formData.name || !formData.birthDate || !formData.gender || !formData.email) {
+      alert('모든 항목을 입력해주세요.');
+      return;
+    }
+
+    try {
+      // 토스페이먼츠 결제 위젯 로드
+      const { loadTossPayments } = await import('@tosspayments/payment-sdk');
+      
+      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
+
+      // 주문 ID 생성 (고유값)
+      const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // 금액 추출 (쉼표와 '원' 제거)
+      const amount = parseInt(pkg.price.replace(/,|원/g, ''));
+
+      // 결제 요청
+      // 환경 변수에서 앱 URL 가져오기 (프로덕션), 없으면 현재 도메인 사용 (개발)
+      // window.location.origin은 런타임에만 사용 가능하므로 함수 내에서 처리
+      const appUrl = APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      
+      await tossPayments.requestPayment('카드', {
+        amount,
+        orderId,
+        orderName: pkg.name,
+        customerName: formData.name,
+        customerEmail: formData.email,
+        successUrl: `${appUrl}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&calendarType=${formData.calendarType}&birthTime=${encodeURIComponent(formData.birthTime)}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
+        failUrl: `${appUrl}/payment/fail`,
+      });
+
+    } catch (error) {
+      console.error('결제 오류:', error);
+      if (error instanceof Error) {
+        alert(`결제 중 오류가 발생했습니다: ${error.message}`);
+      } else {
+        alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white border border-gray-200 rounded-t-3xl md:rounded-3xl shadow-2xl animate-slide-up md:animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Drag handle for mobile bottom sheet */}
+        <div className="md:hidden absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-gray-300 rounded-full mt-3 cursor-grab"></div>
+
+        {/* 닫기 버튼 */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all z-20"
+        >
+          <span className="text-gray-600 text-2xl">×</span>
+        </button>
+
+        <div className="p-6 md:p-8 pt-8 md:pt-8">
+          {/* 패키지 정보 */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="rounded-full bg-blue-100 text-blue-600 px-3 py-1 text-xs font-semibold">
+                {pkg.badge}
+              </span>
+              {pkg.highlight && <span className="text-xl">⭐</span>}
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              {pkg.name}
+            </h3>
+            <p className="text-gray-600 text-sm md:text-base">{pkg.desc}</p>
+          </div>
+
+          {/* 포함 내용 */}
+          <div className="mb-6 p-5 rounded-2xl bg-gray-50 border border-gray-200">
+            <h4 className="font-semibold text-gray-900 mb-3 text-base">📋 포함 내용</h4>
+            <ul className="space-y-2">
+              {pkg.points.map((point, i) => (
+                <li key={i} className="flex items-start gap-2 text-base text-gray-700">
+                  <span className={`mt-0.5 flex-shrink-0 ${point.included ? 'text-blue-600' : 'text-gray-400'}`}>
+                    {point.included ? '✓' : '✕'}
+                  </span>
+                  <span className={point.included ? '' : 'text-gray-400 line-through'}>{point.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 결제 금액 */}
+          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 text-base">총 결제 금액</span>
+              <span className="text-3xl md:text-4xl font-bold text-blue-600">
+                {pkg.price}
+              </span>
+            </div>
+          </div>
+
+          {/* 개인정보 입력 폼 */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200">
+              <h4 className="font-semibold text-gray-900 mb-4 text-base">📝 정보 입력</h4>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-base font-medium text-gray-700 mb-2">
+                    이름 *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="홍길동"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      생년월일 *
+                    </label>
+                    <input
+                      type="date"
+                      name="birthDate"
+                      required
+                      value={formData.birthDate}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      양력/음력/윤달 *
+                    </label>
+                    <select
+                      name="calendarType"
+                      required
+                      value={formData.calendarType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-white text-gray-500">선택</option>
+                      <option value="solar" className="bg-white">양력</option>
+                      <option value="lunar" className="bg-white">음력</option>
+                      <option value="leap" className="bg-white">윤달</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      생시 *
+                    </label>
+                    <select
+                      name="birthTime"
+                      required
+                      value={formData.birthTime}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-white text-gray-500">선택</option>
+                      <option value="unknown" className="bg-white">모름</option>
+                      <option value="23:30-01:30" className="bg-white">자시 (23:30-01:30)</option>
+                      <option value="01:30-03:30" className="bg-white">축시 (01:30-03:30)</option>
+                      <option value="03:30-05:30" className="bg-white">인시 (03:30-05:30)</option>
+                      <option value="05:30-07:30" className="bg-white">묘시 (05:30-07:30)</option>
+                      <option value="07:30-09:30" className="bg-white">진시 (07:30-09:30)</option>
+                      <option value="09:30-11:30" className="bg-white">사시 (09:30-11:30)</option>
+                      <option value="11:30-13:30" className="bg-white">오시 (11:30-13:30)</option>
+                      <option value="13:30-15:30" className="bg-white">미시 (13:30-15:30)</option>
+                      <option value="15:30-17:30" className="bg-white">신시 (15:30-17:30)</option>
+                      <option value="17:30-19:30" className="bg-white">유시 (17:30-19:30)</option>
+                      <option value="19:30-21:30" className="bg-white">술시 (19:30-21:30)</option>
+                      <option value="21:30-23:30" className="bg-white">해시 (21:30-23:30)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      성별 *
+                    </label>
+                    <select
+                      name="gender"
+                      required
+                      value={formData.gender}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="" className="bg-white text-gray-500">선택</option>
+                      <option value="male" className="bg-white">남성</option>
+                      <option value="female" className="bg-white">여성</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-base font-medium text-gray-700 mb-2">
+                    이메일 (PDF 수령용) *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="example@email.com"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 제출 버튼 */}
+            <button
+              type="submit"
+              className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 touch-manipulation shadow-lg shadow-blue-600/30"
+            >
+              {pkg.price} 결제하기 →
+            </button>
+
+            {/* 안내 문구 */}
+            <p className="text-center text-sm text-gray-500">
+              버튼을 누르면 카카오톡으로 제공받을 PDF를 발송해드립니다.
+              <br />
+              입력하신 정보를 복사해 복사해서 사전에 신청해주세요.
+            </p>
+
+            <p className="text-center text-xs text-gray-500">
+              버튼을 누르면 카카오톡 채널로 이동합니다.
+              <br />
+              입력하신 정보를 복사해서 전달해주세요.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Page() {
   const { ref: heroRef, isVisible: heroVisible } = useFadeIn();
@@ -23,7 +485,6 @@ export default function Page() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<typeof packages[0] | null>(null);
-  const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -37,59 +498,28 @@ export default function Page() {
     };
   }, []);
 
-  const openModal = useCallback((pkg: typeof packages[0]) => {
+  const openModal = (pkg: typeof packages[0]) => {
     setSelectedPackage(pkg);
     setIsModalOpen(true);
     // 모달 열 때 스크롤 방지
     document.body.style.overflow = "hidden";
-  }, []);
+  };
 
-  const closeModal = useCallback(() => {
+  const closeModal = () => {
     setIsModalOpen(false);
     setSelectedPackage(null);
     // 모달 닫을 때 스크롤 복구
     document.body.style.overflow = "auto";
-  }, []);
-
-  const openSampleModal = useCallback(() => {
-    setIsSampleModalOpen(true);
-    document.body.style.overflow = "hidden";
-  }, []);
-
-  const closeSampleModal = useCallback(() => {
-    setIsSampleModalOpen(false);
-    document.body.style.overflow = "auto";
-  }, []);
-
-  // ESC 키로 모달 닫기
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (isModalOpen) {
-          closeModal();
-        }
-        if (isSampleModalOpen) {
-          closeSampleModal();
-        }
-      }
-    };
-
-    if (isModalOpen || isSampleModalOpen) {
-      document.addEventListener("keydown", handleEscape);
-      return () => {
-        document.removeEventListener("keydown", handleEscape);
-      };
-    }
-  }, [isModalOpen, isSampleModalOpen, closeModal, closeSampleModal]);
+  };
 
   return (
     <main className="min-h-screen bg-[#07080b] text-white">
       {/* Top Notice */}
       <div className="sticky top-0 z-40 border-b border-white/10 bg-[#07080b]/90 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-center">
+        <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-center">
           <div className="text-sm text-white/80">
-            <span className="font-semibold text-lg text-white">{PROMO.TOTAL_SLOTS}명 한정 {PROMO.PROMO_PRICE.toLocaleString()}원</span>{" "}
-            <span className="text-lg text-white/60">· {PROMO.TOTAL_SLOTS - PROMO.REMAINING_SLOTS}명 마감 / {PROMO.REMAINING_SLOTS}명 남음 · 마감 후 정가 {PROMO.ORIGINAL_PRICE.toLocaleString()}원</span>
+            <span className="font-semibold text-lg text-white">50명 한정 29,900원</span>{" "}
+            <span className="text-lg text-white/60">· 40명 마감 / 10명 남음 · 마감 후 정가 49,800원</span>
           </div>
         </div>
       </div>
@@ -98,68 +528,67 @@ export default function Page() {
       <section className="relative overflow-hidden">
         {/* 영상 배경 */}
         <VideoBackground videoSrc="/videos/seoul.mp4" overlayOpacity={70} />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-14 pb-12 md:pt-20 md:pb-24 min-h-[600px] md:min-h-[700px] flex items-center">
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 pt-14 pb-12 md:pt-20 md:pb-24 min-h-[600px] md:min-h-[700px] flex items-center">
           <div
             ref={heroRef}
             className={`grid gap-10 md:grid-cols-[1.2fr_0.8fr] items-center w-full transition-all duration-1000 ${
               heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <div>
+          <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm md:text-base text-white/80 animate-pulse">
-                <span className="text-[#d4af37]">●</span>
+                <span className="text-[#d4af37]">●</span> 
                 <span className="hidden sm:inline">만세력 기반 정통 명리 분석 · PDF 평생 소장</span>
                 <span className="sm:hidden">정통 명리 분석 · PDF 소장</span>
-              </div>
-
-              <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.15]">
-                단순 운세가 아닙니다.
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-                <span className="text-[#d4af37]">당신의 '선택'을 바꾸는</span> 타이밍 분석입니다.
-              </h1>
-
-              <p className="mt-5 text-lg md:text-xl text-white/75 leading-relaxed">
-                요즘 들어 자꾸 같은 고민이 맴도시나요?
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-                뭔가 해야 할 것 같은데 확신이 없고, 기다려야 할 것 같은데 조급하고,
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-                결정을 내려야 하는데 자꾸 미루게 되고.
-              </p>
-
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <a
-                  href="#packages"
-                  aria-label="상품 구성 섹션으로 이동"
-                  className="rounded-xl border border-white/15 bg-white/5 px-6 py-4 text-center font-semibold text-lg md:text-xl text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#07080b]"
-                >
-                  상품 구성 보기
-                </a>
-              </div>
-
-              <p className="mt-4 text-base md:text-lg text-white/70">
-                새벽 문의도 괜찮습니다. 편하실 때 메시지 주세요.
-              </p>
             </div>
 
-            {/* Trust card */}
+              <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.15]">
+              단순 운세가 아닙니다.
+                <br className="hidden sm:block" />
+                <span className="sm:hidden"> </span>
+                <span className="text-[#d4af37]">당신의 '선택'을 바꾸는 타이밍 분석</span>입니다.
+            </h1>
+
+              <p className="mt-5 text-lg md:text-xl text-white/75 leading-relaxed">
+              요즘 들어 자꾸 같은 고민이 맴도시나요?
+                <br className="hidden sm:block" />
+                <span className="sm:hidden"> </span>
+              뭔가 해야 할 것 같은데 확신이 없고, 기다려야 할 것 같은데 조급하고,
+                <br className="hidden sm:block" />
+                <span className="sm:hidden"> </span>
+              결정을 내려야 하는데 자꾸 미루게 되고.
+            </p>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <a
+                href="#packages"
+                  className="rounded-xl border border-white/15 bg-white/5 px-6 py-4 text-center font-semibold text-lg md:text-xl text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation"
+              >
+                상품 구성 보기
+              </a>
+            </div>
+
+              <p className="mt-4 text-sm md:text-base text-white/50">
+              새벽 문의도 괜찮습니다. 편하실 때 메시지 주세요.
+            </p>
+          </div>
+
+          {/* Trust card */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300">
-              <div className="text-lg md:text-xl font-semibold text-white">상담자 이력</div>
-              <ul className="mt-3 space-y-2 text-lg md:text-xl text-white/85">
-                <li>· 사주팔자 명리심리상담사 1급</li>
-                <li>· 가족심리상담사 1급</li>
-                <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
-              </ul>
+              <div className="text-lg font-semibold text-white/90">상담자 이력</div>
+              <ul className="mt-3 space-y-2 text-lg text-white/70">
+              <li>· 사주팔자 명리심리상담사 1급</li>
+              <li>· 가족심리상담사 1급</li>
+              <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
+            </ul>
             </div>
           </div>
         </div>
       </section>
 
       {/* Hooking Section */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
         <div
           ref={hookingRef}
           className={`text-center w-full mx-auto transition-all duration-1000 ${
@@ -167,7 +596,7 @@ export default function Page() {
           }`}
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 mb-6">
-            <span className="text-[#d4af37]">✨</span>
+            <span className="text-[#d4af37]">✨</span> 
             <span>이미 수백명이 선택했습니다</span>
           </div>
 
@@ -185,7 +614,7 @@ export default function Page() {
           {/* 구분선 */}
           <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-12"></div>
 
-          {/* 실제 상담 사례 */}
+          {/* 실제 상담 사례 - review1.jpg 바로 위 */}
           <div className="mt-10 mb-8">
             <div className="text-center mb-6">
               <div className="text-base font-semibold uppercase tracking-wider text-[#d4af37]">
@@ -227,7 +656,7 @@ export default function Page() {
                   <div className="text-base font-semibold text-[#d4af37]">
                     {item.question}
                   </div>
-                  <p className="mt-3 text-lg md:text-xl leading-relaxed text-white/90 whitespace-pre-line">
+                  <p className="mt-3 text-lg leading-relaxed text-white/75 whitespace-pre-line">
                     "{item.text}"
                   </p>
                 </div>
@@ -259,7 +688,7 @@ export default function Page() {
               >
                 <div className="text-3xl mb-2">{item.icon}</div>
                 <div className="font-semibold text-white mb-1">{item.label}</div>
-                <div className="text-base md:text-lg text-white/80">{item.desc}</div>
+                <div className="text-sm text-white/60">{item.desc}</div>
               </div>
             ))}
           </div>
@@ -284,183 +713,11 @@ export default function Page() {
               당신의 인생 지도를 명확하게 정리해드립니다.
             </p>
           </div>
-
-          {/* 운세 이미지 섹션 */}
-          <div className="mt-12">
-            <div className="text-center mb-6">
-              <div className="text-base font-semibold uppercase tracking-wider text-[#d4af37]">
-                분석 영역
-              </div>
-              <h3 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight text-white">
-                이런 운세를 확인할 수 있습니다
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {/* 배우자운 */}
-              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="/images/lover.png"
-                    alt="배우자운"
-                    fill
-                    className="object-cover rounded-2xl"
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">배우자운</h3>
-                    <p className="text-sm text-white/80">인연과 결혼 타이밍</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 재물운 */}
-              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="/images/rich.png"
-                    alt="재물운"
-                    fill
-                    className="object-cover rounded-2xl"
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">재물운</h3>
-                    <p className="text-sm text-white/80">돈이 들어오는 시기</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 건강운 */}
-              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="/images/health.png"
-                    alt="건강운"
-                    fill
-                    className="object-cover rounded-2xl"
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">건강운</h3>
-                    <p className="text-sm text-white/80">건강 관리 시기</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 직장운 */}
-              <div className="relative group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="aspect-[4/3] relative">
-                  <Image
-                    src="/images/owner.png"
-                    alt="직장운"
-                    fill
-                    className="object-cover rounded-2xl"
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">직장운</h3>
-                    <p className="text-sm text-white/80">커리어와 일의 방향</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 신뢰 배지 섹션 */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-white/10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
-            <div className="text-4xl mb-3">✅</div>
-            <h3 className="text-lg md:text-xl font-bold text-white mb-2">100% 환불 보장</h3>
-            <p className="text-sm md:text-base text-white/70">성의 없다고 느끼시면 전액 환불</p>
-          </div>
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
-            <div className="text-4xl mb-3">⚡</div>
-            <h3 className="text-lg md:text-xl font-bold text-white mb-2">24시간 내 발송</h3>
-            <p className="text-sm md:text-base text-white/70">결제 후 빠른 분석 및 전송</p>
-          </div>
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
-            <div className="text-4xl mb-3">📄</div>
-            <h3 className="text-lg md:text-xl font-bold text-white mb-2">PDF 평생 소장</h3>
-            <p className="text-sm md:text-base text-white/70">다운로드 후 평생 보관 가능</p>
-          </div>
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5 hover:border-[#d4af37]/30 hover:bg-white/10 transition-all">
-            <div className="text-4xl mb-3">🎯</div>
-            <h3 className="text-lg md:text-xl font-bold text-white mb-2">정통 만세력 기반</h3>
-            <p className="text-sm md:text-base text-white/70">신점이 아닌 객관적 분석</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 프로세스 설명 섹션 */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-white/10">
-        <div className="text-center mb-8">
-          <div className="text-sm font-semibold uppercase tracking-wider text-[#d4af37] mb-2">
-            간단한 3단계
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">
-            이렇게 진행됩니다
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37] flex items-center justify-center text-3xl font-bold text-black">
-              1
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-3">정보 입력</h3>
-            <p className="text-base md:text-lg text-white/80">
-              이름, 생년월일, 생시 등<br />
-              기본 정보를 입력해주세요
-            </p>
-          </div>
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37] flex items-center justify-center text-3xl font-bold text-black">
-              2
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-3">결제</h3>
-            <p className="text-base md:text-lg text-white/80">
-              안전한 결제 시스템으로<br />
-              간편하게 결제하세요
-            </p>
-          </div>
-          <div className="text-center p-6 rounded-2xl border border-white/10 bg-white/5">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37] flex items-center justify-center text-3xl font-bold text-black">
-              3
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-3">PDF 수령</h3>
-            <p className="text-base md:text-lg text-white/80">
-              24시간 이내 이메일로<br />
-              정밀 분석 PDF 전송
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* PDF 샘플 미리보기 섹션 */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 border-t border-white/10">
-        <div className="text-center">
-          <button
-            onClick={openSampleModal}
-            aria-label="PDF 샘플 미리보기"
-            className="inline-flex items-center gap-3 rounded-2xl border-2 border-[#d4af37] bg-[#d4af37]/20 hover:bg-[#d4af37]/30 px-8 py-4 md:px-12 md:py-5 text-lg md:text-xl font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#d4af37]/20 hover:shadow-[#d4af37]/30 focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:ring-offset-2 focus:ring-offset-[#07080b]"
-          >
-            <span className="text-2xl md:text-3xl" aria-hidden="true">📄</span>
-            <span>PDF 샘플 미리보기</span>
-          </button>
-          <p className="mt-3 text-sm md:text-base text-white/60">
-            실제 받으실 PDF의 품질을 미리 확인하세요
-          </p>
         </div>
       </section>
 
       {/* Packages */}
-      <section id="packages" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
+      <section id="packages" className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
         <SectionTitle eyebrow="상품 구성" title="당신에게 맞는 분석을 선택하세요" />
 
         <div
@@ -494,26 +751,21 @@ export default function Page() {
                 )}
               </div>
 
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <h3
-                  className={`text-2xl font-bold ${
-                    pkg.highlight ? "text-[#d4af37]" : "text-white"
-                  }`}
-                >
-                  {pkg.name}
-                </h3>
-                <span className={`text-xl font-bold ${pkg.highlight ? 'text-[#d4af37]' : 'text-white'}`}>
-                  {pkg.price}
-                </span>
-              </div>
+              <h3
+                className={`text-2xl font-bold ${
+                  pkg.highlight ? "text-[#d4af37]" : "text-white"
+                }`}
+              >
+                {pkg.name}
+              </h3>
 
-              <p className="mt-2 text-base md:text-lg text-white/80 leading-relaxed whitespace-pre-line">
+              <p className="mt-2 text-base text-white/60 leading-relaxed whitespace-pre-line">
                 {pkg.desc}
               </p>
 
               <ul className="mt-4 space-y-2 flex-grow">
                 {pkg.points.map((point, j) => (
-                  <li key={j} className="flex items-start gap-2 text-base md:text-lg text-white/90">
+                  <li key={j} className="flex items-start gap-2 text-base text-white/75">
                     <span className={`mt-0.5 ${point.included ? 'text-[#d4af37]' : 'text-white/30'}`}>
                       {point.included ? '✓' : '✕'}
                     </span>
@@ -522,49 +774,31 @@ export default function Page() {
                 ))}
               </ul>
 
-              <div className="mt-6">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openModal(pkg);
-                  }}
-                  aria-label={`${pkg.name} 패키지 선택하기`}
-                  className={`w-full rounded-xl py-3 text-base font-semibold transition-all group-hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:ring-offset-2 focus:ring-offset-transparent ${
-                    pkg.highlight
-                      ? "bg-[#d4af37] text-black hover:opacity-90"
-                      : "border border-white/20 bg-white/5 text-white hover:bg-white/10"
-                  }`}
-                >
+              <div className="mt-6 flex items-center justify-between gap-3">
+                <span className={`text-2xl font-bold ${pkg.highlight ? 'text-[#d4af37]' : 'text-white'}`}>
+                  {pkg.price}
+                </span>
+                <button className={`flex-1 rounded-xl py-3 text-base font-semibold transition-all group-hover:scale-105 ${
+                  pkg.highlight
+                    ? "bg-[#d4af37] text-black hover:opacity-90"
+                    : "border border-white/20 bg-white/5 text-white hover:bg-white/10"
+                }`}>
                   선택하기
                 </button>
               </div>
             </div>
           ))}
         </div>
-
-        {/* 패키지 섹션 직후 강력한 CTA */}
-        <div className="mt-12 text-center">
-          <a
-            href="#packages"
-            aria-label="상품 구성 섹션으로 이동하여 시작하기"
-            className="inline-block rounded-xl bg-[#d4af37] px-10 py-5 text-xl md:text-2xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:ring-offset-2 focus:ring-offset-[#07080b]"
-          >
-            지금 바로 시작하기 →
-          </a>
-          <p className="mt-4 text-base md:text-lg text-white/70">
-            ⏰ {PROMO.REMAINING_SLOTS}자리 남음 · 마감 후 정가 {PROMO.ORIGINAL_PRICE.toLocaleString()}원
-          </p>
-        </div>
       </section>
 
       {/* Mid Hooking Section - 패키지와 FAQ 사이 */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
-          <div className="text-center max-w-4xl mx-auto">
+      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
+        <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-8 text-white">
             혹시 이런 생각 하고 계신가요?
           </h2>
 
-          <div className="space-y-6 mb-8">
+          <div className="space-y-4 mb-8">
             <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
               <p className="text-lg md:text-xl text-white/90 italic">
                 "나중에 해도 되지 않을까?"
@@ -589,39 +823,31 @@ export default function Page() {
             <div className="flex items-center justify-center gap-2">
               <span className="text-2xl">⏰</span>
               <p className="text-lg md:text-xl text-white/90 font-semibold">
-                {PROMO.REMAINING_SLOTS}자리 남음
+                10자리 남음
               </p>
             </div>
-          </div>
+        </div>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a
-                href="#packages"
-                aria-label="상품 구성 섹션으로 이동하여 시작하기"
-                className="inline-block rounded-xl bg-[#d4af37] px-8 py-4 text-lg md:text-xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:ring-offset-2 focus:ring-offset-[#07080b]"
-              >
-                지금 바로 시작하기 →
-              </a>
-              <Link
-                href={CHAT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="카카오톡 채널로 이동하여 상담 문의하기 (새 창)"
-                className="inline-block rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-lg md:text-xl font-semibold text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#07080b]"
-              >
-                상담 문의하기
-              </Link>
-            </div>
+          <div className="mt-8">
+          <Link
+            href={CHAT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-xl bg-[#d4af37] px-8 py-4 text-lg md:text-xl font-bold text-black hover:opacity-90 hover:scale-105 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#d4af37]/30 touch-manipulation"
+          >
+              내 타이밍 확인하기 →
+          </Link>
+          </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 border-t border-white/10">
+      <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
         <SectionTitle eyebrow="자주 묻는 질문" title="FAQ" />
 
         <div
           ref={faqRef}
-          className={`mt-8 space-y-6 transition-all duration-1000 ${
+          className={`mt-8 space-y-4 transition-all duration-1000 ${
             faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -632,22 +858,18 @@ export default function Page() {
             >
               <button
                 onClick={() => toggleFAQ(i)}
-                aria-expanded={openFAQ === i}
-                aria-controls={`faq-answer-${i}`}
-                className="flex w-full items-center justify-between p-5 md:p-6 text-left transition-all hover:bg-white/5 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:ring-inset"
+                className="flex w-full items-center justify-between p-5 text-left transition-all hover:bg-white/5 touch-manipulation"
               >
-                <span className="font-semibold text-lg md:text-xl text-white pr-4">{faq.q}</span>
+                <span className="font-semibold text-white pr-4">{faq.q}</span>
                 <span
-                  className={`text-2xl md:text-3xl text-[#d4af37] transition-transform duration-300 flex-shrink-0 ${
+                  className={`text-2xl text-[#d4af37] transition-transform duration-300 flex-shrink-0 ${
                     openFAQ === i ? "rotate-180" : ""
                   }`}
-                  aria-hidden="true"
                 >
                   ↓
                 </span>
               </button>
               <div
-                id={`faq-answer-${i}`}
                 className={`grid transition-all duration-300 ease-in-out ${
                   openFAQ === i
                     ? "grid-rows-[1fr] opacity-100"
@@ -655,7 +877,7 @@ export default function Page() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="px-5 md:px-6 pb-6 md:pb-7 text-lg md:text-xl text-white/90 leading-relaxed">
+                  <p className="px-5 pb-5 text-white/75 leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
@@ -669,8 +891,8 @@ export default function Page() {
       <section className="relative overflow-hidden">
         {/* 영상 배경 */}
         <VideoBackground videoSrc="/videos/hwasung.mp4" overlayOpacity={75} />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+        
+        <div className="relative z-10 mx-auto max-w-5xl px-4 py-16 md:py-24 text-center">
           <div
             ref={ctaRef}
             className={`transition-all duration-1000 ${
@@ -685,133 +907,36 @@ export default function Page() {
             </h2>
 
             <p className="mt-6 text-xl md:text-2xl text-white/80">
-              {PROMO.TOTAL_SLOTS}명 한정 {PROMO.PROMO_PRICE.toLocaleString()}원 · {PROMO.REMAINING_SLOTS}명 남음 · 마감 후 정가 {PROMO.ORIGINAL_PRICE.toLocaleString()}원
+              50명 한정 29,900원 · 10명 남음 · 마감 후 정가 49,800원
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
                 href="#packages"
-                aria-label="상품 구성 섹션으로 이동하여 다시 보기"
-                className="rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-lg font-semibold text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#07080b]"
+                className="rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-lg font-semibold text-white hover:bg-white/10 hover:scale-105 transition-all active:scale-95 touch-manipulation"
               >
                 상품 다시 보기
               </a>
-            </div>
+          </div>
 
-            <p className="mt-6 text-base md:text-lg text-white/70">
+            <p className="mt-6 text-sm text-white/60">
               24시간 내 답변 · PDF 평생 소장 · 2026년 신년 특별가
-            </p>
+          </p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#0f1014] px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mx-auto max-w-7xl">
-          {/* 법률 페이지 링크 */}
-          <div className="text-center text-base md:text-lg text-white/70 pb-6">
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/terms" className="hover:text-white transition-colors">
-                이용약관
-              </Link>
-              <span>·</span>
-              <Link href="/privacy" className="hover:text-white transition-colors">
-                개인정보처리방침
-              </Link>
-            </div>
-          </div>
-
-          {/* 구분선 */}
-          <div className="border-t border-white/10 my-6"></div>
-
-          {/* 로고 & 사업자 정보 */}
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-            {/* 왼쪽: 로고 */}
-            <div className="flex justify-center md:justify-start">
-              <Image
-                src="/logo/logo.png"
-                alt="운명테라피 로고"
-                width={200}
-                height={120}
-                className="object-contain brightness-0 invert"
-                priority={false}
-              />
-            </div>
-
-            {/* 오른쪽: 사업자 정보 */}
-            <div className="flex-1 text-center md:text-right text-sm md:text-base text-white/60 space-y-2">
-              <div className="space-y-1">
-                <p>대표자: [대표자명] | 사업자등록번호: [000-00-00000]</p>
-                <p>통신판매업 신고번호: [제0000-서울강남-00000호]</p>
-                <p>주소: [서울특별시 강남구 ○○로 ○○, ○○빌딩 ○층]</p>
-                <p>이메일: [contact@example.com] | 고객센터: 카카오톡 채널</p>
-              </div>
-              <p className="mt-4 text-white/70">© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
-              <p className="text-xs md:text-sm text-yellow-500/70 mt-3">
-                ⚠️ 주의: 위 사업자 정보는 플레이스홀더입니다. 실제 사업자 정보로 반드시 교체하세요.
-              </p>
-            </div>
-          </div>
+      <footer className="border-t border-white/10 bg-[#0f1014] px-4 py-8">
+        <div className="mx-auto max-w-5xl text-center text-sm text-white/50">
+          <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
+          <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
         </div>
       </footer>
 
       {/* 모달 */}
       {selectedPackage && (
         <OrderModal package={selectedPackage} isOpen={isModalOpen} onClose={closeModal} />
-      )}
-
-      {/* PDF 샘플 모달 */}
-      {isSampleModalOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-          onClick={closeSampleModal}
-          role="presentation"
-        >
-            <div
-              className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="sample-modal-title"
-            >
-            {/* 닫기 버튼 */}
-            <button
-              onClick={closeSampleModal}
-              aria-label="모달 닫기"
-              className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-            >
-              <span className="text-gray-600 text-2xl" aria-hidden="true">×</span>
-            </button>
-
-            {/* 샘플 이미지 */}
-            <div className="p-8 overflow-y-auto max-h-[90vh]">
-              <h3 id="sample-modal-title" className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">
-                프리미엄 종합 분석 PDF 샘플
-              </h3>
-              <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-gray-300">
-                <div className="text-center p-8">
-                  <div className="text-8xl mb-6">📄</div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-700 mb-4">
-                    PDF 샘플 이미지
-                  </p>
-                  <p className="text-base md:text-lg text-gray-600">
-                    실제 샘플 이미지를 여기에 추가하세요
-                  </p>
-                  <p className="mt-4 text-sm text-gray-500">
-                    public/images/sample-pdf.png 또는 sample-pdf.jpg
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <p className="text-sm md:text-base text-gray-700 text-center">
-                  💡 실제 받으실 PDF는 이보다 훨씬 더 상세하고 전문적인 분석 내용을 포함합니다.
-                  <br />
-                  100페이지 이상의 깊이 있는 인생 지도를 제공해드립니다.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       )}
 
       {/* 플로팅 채팅문의 버튼 */}
