@@ -196,6 +196,14 @@ function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
   );
 }
 
+// 인원별 가격 정보
+const PRICING = {
+  1: { price: 39000, originalPrice: 99000, discount: 60 },
+  2: { price: 70000, originalPrice: 198000, discount: 65 },
+  3: { price: 100000, originalPrice: 297000, discount: 66 },
+  4: { price: 125000, originalPrice: 396000, discount: 68 },
+};
+
 // 모달 컴포넌트
 function OrderModal({
   package: pkg,
@@ -206,53 +214,98 @@ function OrderModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [formData, setFormData] = useState({
+  const [personCount, setPersonCount] = useState(1);
+  const [formDataList, setFormDataList] = useState([{
     name: "",
     birthDate: "",
     calendarType: "", // 양력/음력/윤달
     birthTime: "", // 생시
     gender: "",
     email: "",
-  });
+  }]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // 모달이 열릴 때마다 초기화
+  useEffect(() => {
+    if (isOpen) {
+      setPersonCount(1);
+      setFormDataList([{
+        name: "",
+        birthDate: "",
+        calendarType: "",
+        birthTime: "",
+        gender: "",
+        email: "",
+      }]);
+    }
+  }, [isOpen]);
+
+  const handleInputChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormDataList((prev) => {
+      const newList = [...prev];
+      newList[index] = { ...newList[index], [name]: value };
+      return newList;
+    });
+  };
+
+  const handlePersonCountChange = (count: number) => {
+    setPersonCount(count);
+    // 인원 수에 맞게 formData 배열 조정
+    setFormDataList((prev) => {
+      const newList = [...prev];
+      while (newList.length < count) {
+        newList.push({
+          name: "",
+          birthDate: "",
+          calendarType: "",
+          birthTime: "",
+          gender: "",
+          email: "",
+        });
+      }
+      return newList.slice(0, count);
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // 입력 검증
-    if (!formData.name || !formData.birthDate || !formData.gender || !formData.email) {
-      alert('모든 항목을 입력해주세요.');
-      return;
+
+    // 입력 검증 - 모든 사람의 정보 확인
+    for (let i = 0; i < formDataList.length; i++) {
+      const formData = formDataList[i];
+      if (!formData.name || !formData.birthDate || !formData.gender || !formData.email || !formData.calendarType || !formData.birthTime) {
+        alert(`${i + 1}번째 분석 대상자의 모든 항목을 입력해주세요.`);
+        return;
+      }
     }
 
     try {
       // 토스페이먼츠 결제 위젯 로드
       const { loadTossPayments } = await import('@tosspayments/payment-sdk');
-      
+
       const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
 
       // 주문 ID 생성 (고유값)
       const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      
-      // 금액 추출 (쉼표와 '원' 제거)
-      const amount = parseInt(pkg.price.replace(/,|원/g, ''));
+
+      // 프리미엄 패키지이고 인원별 가격이 있으면 해당 가격 사용, 아니면 패키지 가격 사용
+      const amount = pkg.highlight && PRICING[personCount as keyof typeof PRICING]
+        ? PRICING[personCount as keyof typeof PRICING].price
+        : parseInt(pkg.price.replace(/,|원/g, ''));
 
       // 결제 요청
-      // 환경 변수에서 앱 URL 가져오기 (프로덕션), 없으면 현재 도메인 사용 (개발)
-      // window.location.origin은 런타임에만 사용 가능하므로 함수 내에서 처리
       const appUrl = APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-      
+
+      // 여러 사람의 정보를 JSON으로 인코딩
+      const personsData = JSON.stringify(formDataList);
+
       await tossPayments.requestPayment('카드', {
         amount,
         orderId,
-        orderName: pkg.name,
-        customerName: formData.name,
-        customerEmail: formData.email,
-        successUrl: `${appUrl}/payment/success?name=${encodeURIComponent(formData.name)}&birthDate=${formData.birthDate}&calendarType=${formData.calendarType}&birthTime=${encodeURIComponent(formData.birthTime)}&gender=${formData.gender}&email=${encodeURIComponent(formData.email)}&package=${encodeURIComponent(pkg.name)}`,
+        orderName: `${pkg.name} (${personCount}인)`,
+        customerName: formDataList[0].name,
+        customerEmail: formDataList[0].email,
+        successUrl: `${appUrl}/payment/success?personsData=${encodeURIComponent(personsData)}&personCount=${personCount}&package=${encodeURIComponent(pkg.name)}`,
         failUrl: `${appUrl}/payment/fail`,
       });
 
@@ -318,18 +371,51 @@ function OrderModal({
             </ul>
           </div>
 
+          {/* 분석 인원 선택 (프리미엄 패키지만) */}
+          {pkg.highlight && (
+            <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200">
+              <h4 className="font-semibold text-gray-900 mb-3 text-base">👥 분석 인원 선택</h4>
+              <div className="grid grid-cols-4 gap-2">
+                {[1, 2, 3, 4].map((count) => (
+                  <button
+                    key={count}
+                    type="button"
+                    onClick={() => handlePersonCountChange(count)}
+                    className={`py-3 px-2 rounded-xl font-semibold text-sm transition-all ${
+                      personCount === count
+                        ? 'bg-blue-600 text-white shadow-lg scale-105'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:border-blue-400'
+                    }`}
+                  >
+                    {count}인
+                  </button>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-gray-600">
+                💡 2인 이상 선택 시 궁합 분석이 무료로 제공됩니다
+              </p>
+            </div>
+          )}
+
           {/* 결제 금액 */}
           <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
             <div className="flex items-center justify-between">
               <span className="text-gray-700 text-base">총 결제 금액</span>
               <div className="flex flex-col items-end gap-1">
                 <span className="text-3xl md:text-4xl font-bold text-blue-600">
-                  {pkg.price}
+                  {pkg.highlight && PRICING[personCount as keyof typeof PRICING]
+                    ? `${PRICING[personCount as keyof typeof PRICING].price.toLocaleString()}원`
+                    : pkg.price}
                 </span>
-                {pkg.highlight && (
-                  <span className="text-sm text-gray-400 line-through">
-                    99,000원
-                  </span>
+                {pkg.highlight && PRICING[personCount as keyof typeof PRICING] && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400 line-through">
+                      {PRICING[personCount as keyof typeof PRICING].originalPrice.toLocaleString()}원
+                    </span>
+                    <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded">
+                      {PRICING[personCount as keyof typeof PRICING].discount}% 할인
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -337,129 +423,135 @@ function OrderModal({
 
           {/* 개인정보 입력 폼 */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-4 text-base">📝 정보 입력</h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
-                    이름 *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="홍길동"
-                  />
-                </div>
+            {formDataList.map((formData, index) => (
+              <div key={index} className="p-5 rounded-2xl bg-gray-50 border border-gray-200">
+                <h4 className="font-semibold text-gray-900 mb-4 text-base">
+                  📝 {formDataList.length > 1 ? `${index + 1}번째 ` : ''}분석 대상자 정보 입력
+                </h4>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-base font-medium text-gray-700 mb-2">
-                      생년월일 *
+                      이름 *
                     </label>
                     <input
-                      type="date"
-                      name="birthDate"
+                      type="text"
+                      name="name"
                       required
-                      value={formData.birthDate}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange(index, e)}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="홍길동"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
-                      양력/음력/윤달 *
-                    </label>
-                    <select
-                      name="calendarType"
-                      required
-                      value={formData.calendarType}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="" className="bg-white text-gray-500">선택</option>
-                      <option value="solar" className="bg-white">양력</option>
-                      <option value="lunar" className="bg-white">음력</option>
-                      <option value="leap" className="bg-white">윤달</option>
-                    </select>
-                  </div>
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-base font-medium text-gray-700 mb-2">
+                        생년월일 *
+                      </label>
+                      <input
+                        type="date"
+                        name="birthDate"
+                        required
+                        value={formData.birthDate}
+                        onChange={(e) => handleInputChange(index, e)}
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
-                      생시 *
-                    </label>
-                    <select
-                      name="birthTime"
-                      required
-                      value={formData.birthTime}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="" className="bg-white text-gray-500">선택</option>
-                      <option value="unknown" className="bg-white">모름</option>
-                      <option value="23:30-01:30" className="bg-white">자시 (23:30-01:30)</option>
-                      <option value="01:30-03:30" className="bg-white">축시 (01:30-03:30)</option>
-                      <option value="03:30-05:30" className="bg-white">인시 (03:30-05:30)</option>
-                      <option value="05:30-07:30" className="bg-white">묘시 (05:30-07:30)</option>
-                      <option value="07:30-09:30" className="bg-white">진시 (07:30-09:30)</option>
-                      <option value="09:30-11:30" className="bg-white">사시 (09:30-11:30)</option>
-                      <option value="11:30-13:30" className="bg-white">오시 (11:30-13:30)</option>
-                      <option value="13:30-15:30" className="bg-white">미시 (13:30-15:30)</option>
-                      <option value="15:30-17:30" className="bg-white">신시 (15:30-17:30)</option>
-                      <option value="17:30-19:30" className="bg-white">유시 (17:30-19:30)</option>
-                      <option value="19:30-21:30" className="bg-white">술시 (19:30-21:30)</option>
-                      <option value="21:30-23:30" className="bg-white">해시 (21:30-23:30)</option>
-                    </select>
+                    <div>
+                      <label className="block text-base font-medium text-gray-700 mb-2">
+                        양력/음력/윤달 *
+                      </label>
+                      <select
+                        name="calendarType"
+                        required
+                        value={formData.calendarType}
+                        onChange={(e) => handleInputChange(index, e)}
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="" className="bg-white text-gray-500">선택</option>
+                        <option value="solar" className="bg-white">양력</option>
+                        <option value="lunar" className="bg-white">음력</option>
+                        <option value="leap" className="bg-white">윤달</option>
+                      </select>
+                    </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-base font-medium text-gray-700 mb-2">
+                        생시 *
+                      </label>
+                      <select
+                        name="birthTime"
+                        required
+                        value={formData.birthTime}
+                        onChange={(e) => handleInputChange(index, e)}
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="" className="bg-white text-gray-500">선택</option>
+                        <option value="unknown" className="bg-white">모름</option>
+                        <option value="23:30-01:30" className="bg-white">자시 (23:30-01:30)</option>
+                        <option value="01:30-03:30" className="bg-white">축시 (01:30-03:30)</option>
+                        <option value="03:30-05:30" className="bg-white">인시 (03:30-05:30)</option>
+                        <option value="05:30-07:30" className="bg-white">묘시 (05:30-07:30)</option>
+                        <option value="07:30-09:30" className="bg-white">진시 (07:30-09:30)</option>
+                        <option value="09:30-11:30" className="bg-white">사시 (09:30-11:30)</option>
+                        <option value="11:30-13:30" className="bg-white">오시 (11:30-13:30)</option>
+                        <option value="13:30-15:30" className="bg-white">미시 (13:30-15:30)</option>
+                        <option value="15:30-17:30" className="bg-white">신시 (15:30-17:30)</option>
+                        <option value="17:30-19:30" className="bg-white">유시 (17:30-19:30)</option>
+                        <option value="19:30-21:30" className="bg-white">술시 (19:30-21:30)</option>
+                        <option value="21:30-23:30" className="bg-white">해시 (21:30-23:30)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-medium text-gray-700 mb-2">
+                        성별 *
+                      </label>
+                      <select
+                        name="gender"
+                        required
+                        value={formData.gender}
+                        onChange={(e) => handleInputChange(index, e)}
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="" className="bg-white text-gray-500">선택</option>
+                        <option value="male" className="bg-white">남성</option>
+                        <option value="female" className="bg-white">여성</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-base font-medium text-gray-700 mb-2">
-                      성별 *
+                      이메일 (PDF 수령용) *
                     </label>
-                    <select
-                      name="gender"
+                    <input
+                      type="email"
+                      name="email"
                       required
-                      value={formData.gender}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="" className="bg-white text-gray-500">선택</option>
-                      <option value="male" className="bg-white">남성</option>
-                      <option value="female" className="bg-white">여성</option>
-                    </select>
+                      value={formData.email}
+                      onChange={(e) => handleInputChange(index, e)}
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="example@email.com"
+                    />
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
-                    이메일 (PDF 수령용) *
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="example@email.com"
-                  />
                 </div>
               </div>
-            </div>
+            ))}
 
             {/* 제출 버튼 */}
             <button
               type="submit"
               className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 touch-manipulation shadow-lg shadow-blue-600/30"
             >
-              {pkg.price} 결제하기 →
+              {pkg.highlight && PRICING[personCount as keyof typeof PRICING]
+                ? `${PRICING[personCount as keyof typeof PRICING].price.toLocaleString()}원`
+                : pkg.price} 결제하기 →
             </button>
 
             {/* 안내 문구 */}
