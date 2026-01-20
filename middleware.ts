@@ -53,6 +53,7 @@ export function middleware(request: NextRequest) {
     const allowedOrigins = [
       process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
       'https://unmyoung.vercel.app',
+      'https://saju.unmyungtherapy.com',
     ].filter(Boolean);
 
     if (origin && allowedOrigins.includes(origin)) {
