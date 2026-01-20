@@ -1,18 +1,88 @@
-# 웹사이트 런칭 준비 체크리스트
+# 🚀 웹사이트 런칭 체크리스트
+
+unmyoung 사주 분석 웹사이트의 배포 및 런칭을 위한 통합 체크리스트입니다.
+
+---
 
 ## 📋 목차
-1. [환경 설정](#1-환경-설정)
-2. [보안](#2-보안)
-3. [성능 최적화](#3-성능-최적화)
-4. [SEO 및 검색 엔진 최적화](#4-seo-및-검색-엔진-최적화)
-5. [결제 시스템](#5-결제-시스템)
-6. [데이터베이스](#6-데이터베이스)
-7. [모니터링 및 분석](#7-모니터링-및-분석)
-8. [법률 및 규정 준수](#8-법률-및-규정-준수)
-9. [콘텐츠 및 UX](#9-콘텐츠-및-ux)
-10. [배포 및 인프라](#10-배포-및-인프라)
-11. [테스트](#11-테스트)
-12. [런칭 후 체크리스트](#12-런칭-후-체크리스트)
+
+1. [빠른 배포 가이드](#빠른-배포-가이드) (처음 배포하시는 분)
+2. [환경 설정](#1-환경-설정)
+3. [보안](#2-보안)
+4. [성능 최적화](#3-성능-최적화)
+5. [SEO 및 검색 엔진 최적화](#4-seo-및-검색-엔진-최적화)
+6. [결제 시스템](#5-결제-시스템)
+7. [데이터베이스](#6-데이터베이스)
+8. [모니터링 및 분석](#7-모니터링-및-분석)
+9. [법률 및 규정 준수](#8-법률-및-규정-준수)
+10. [콘텐츠 및 UX](#9-콘텐츠-및-ux)
+11. [배포 및 인프라](#10-배포-및-인프라)
+12. [테스트](#11-테스트)
+13. [런칭 후 관리](#12-런칭-후-관리)
+
+---
+
+## 빠른 배포 가이드
+
+처음 배포하시는 분을 위한 필수 체크리스트입니다.
+
+### ✅ 1단계: 로컬 빌드 확인 (5분)
+
+```bash
+# 빌드 테스트
+npm run build
+
+# 성공 확인
+# ✓ Compiled successfully
+```
+
+- [ ] 빌드 성공
+- [ ] TypeScript 오류 없음
+- [ ] 모든 페이지 정상 생성
+
+### ✅ 2단계: Vercel 환경 변수 설정 (10분)
+
+Vercel 대시보드 → 프로젝트 → Settings → Environment Variables
+
+#### 필수 환경 변수
+
+```env
+# 1. 토스페이먼츠 (결제)
+NEXT_PUBLIC_TOSS_CLIENT_KEY=test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq
+TOSS_SECRET_KEY=test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R
+
+# 2. 앱 URL
+NEXT_PUBLIC_APP_URL=https://unmyoung.vercel.app
+
+# 3. Supabase (데이터베이스)
+NEXT_PUBLIC_SUPABASE_URL=https://hgsjxrrzxpfcwwbizxsl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[Supabase에서 확인]
+SUPABASE_SERVICE_ROLE_KEY=[Supabase에서 확인]
+```
+
+⚠️ **중요**: Production, Preview, Development 모두 선택
+
+### ✅ 3단계: Vercel 배포 (5분)
+
+```bash
+# Git 푸시 (Vercel 자동 배포)
+git add .
+git commit -m "배포 준비 완료"
+git push
+
+# 또는 Vercel CLI 사용
+vercel --prod
+```
+
+### ✅ 4단계: 배포 후 테스트 (10분)
+
+- [ ] 홈페이지 로딩 확인
+- [ ] 결제 모달 열기
+- [ ] 결제 프로세스 (테스트 모드)
+- [ ] 결제 성공 페이지
+- [ ] 결제 실패 페이지
+- [ ] Supabase에 데이터 저장 확인
+- [ ] 모바일 반응형 확인
 
 ---
 
@@ -25,13 +95,11 @@
   - 현재: 테스트 키 사용 중 (`test_ck_`, `test_sk_`)
   - 필요: [Toss Payments 개발자 센터](https://developers.tosspayments.com/)에서 프로덕션 키 발급
   ```env
-  NEXT_PUBLIC_TOSS_CLIENT_KEY=live_ck_XXXXX  # 실제 키로 교체 필요
-  TOSS_SECRET_KEY=live_sk_XXXXX  # 실제 키로 교체 필요
+  NEXT_PUBLIC_TOSS_CLIENT_KEY=live_ck_XXXXX
+  TOSS_SECRET_KEY=live_sk_XXXXX
   ```
 
 - [ ] **Supabase 환경 변수 설정**
-  - 현재: `.env.local` 파일 없음
-  - 필요: Supabase 키 추가
   ```env
   NEXT_PUBLIC_SUPABASE_URL=https://hgsjxrrzxpfcwwbizxsl.supabase.co
   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_anon_key
@@ -40,7 +108,7 @@
 
 - [ ] **프로덕션 URL 설정**
   ```env
-  NEXT_PUBLIC_APP_URL=https://yourdomain.com  # 실제 도메인으로 교체
+  NEXT_PUBLIC_APP_URL=https://yourdomain.com
   ```
 
 #### Vercel 환경 변수 설정
@@ -53,57 +121,34 @@
 ## 2. 보안
 
 ### ✅ API 및 키 보안
-- [ ] **환경 변수 검증**
-  - [ ] `.env.local` 파일이 `.gitignore`에 포함되어 있는지 확인
-  - [ ] 코드에 하드코딩된 시크릿 키가 없는지 확인
-  - [ ] GitHub 등 공개 저장소에 민감 정보 노출 여부 확인
+- [ ] `.env.local` 파일이 `.gitignore`에 포함되어 있는지 확인
+- [ ] 코드에 하드코딩된 시크릿 키가 없는지 확인
+- [ ] GitHub 등 공개 저장소에 민감 정보 노출 여부 확인
 
-- [ ] **Supabase 보안 설정**
-  - [ ] Row Level Security (RLS) 정책 활성화 확인
-  - [ ] Service Role Key는 서버 사이드에서만 사용하는지 확인
-  - [ ] 데이터베이스 백업 자동화 설정
+### ✅ Supabase 보안 설정
+- [ ] Row Level Security (RLS) 정책 활성화 확인
+- [ ] Service Role Key는 서버 사이드에서만 사용하는지 확인
+- [ ] 데이터베이스 백업 자동화 설정
 
-- [ ] **Toss Payments 보안**
-  - [ ] 프로덕션 Secret Key는 서버 환경에만 저장
-  - [ ] 결제 금액 검증 로직 확인 (서버 사이드)
-  - [ ] 결제 완료 웹훅 설정 (선택사항)
+### ✅ Toss Payments 보안
+- [ ] 프로덕션 Secret Key는 서버 환경에만 저장
+- [ ] 결제 금액 검증 로직 확인 (서버 사이드)
+- [ ] 결제 완료 웹훅 설정 (선택사항)
 
 ### ✅ HTTPS 및 도메인 보안
-- [ ] **SSL 인증서 설정** (Vercel은 자동 제공)
-- [ ] **도메인 설정**
-  - [ ] 도메인 구매 완료
-  - [ ] Vercel에 커스텀 도메인 연결
-  - [ ] DNS 레코드 설정 (A 레코드 또는 CNAME)
-  - [ ] HTTPS 강제 리디렉션 활성화
+- [ ] SSL 인증서 설정 (Vercel은 자동 제공)
+- [ ] 도메인 구매 완료
+- [ ] Vercel에 커스텀 도메인 연결
+- [ ] DNS 레코드 설정 (A 레코드 또는 CNAME)
+- [ ] HTTPS 강제 리디렉션 활성화
 
 ### ✅ 보안 헤더 설정
-- [ ] **Next.js Security Headers 추가** (`next.config.ts`)
-  ```typescript
-  const securityHeaders = [
-    {
-      key: 'X-DNS-Prefetch-Control',
-      value: 'on'
-    },
-    {
-      key: 'Strict-Transport-Security',
-      value: 'max-age=63072000; includeSubDomains; preload'
-    },
-    {
-      key: 'X-Frame-Options',
-      value: 'SAMEORIGIN'
-    },
-    {
-      key: 'X-Content-Type-Options',
-      value: 'nosniff'
-    },
-    {
-      key: 'Referrer-Policy',
-      value: 'origin-when-cross-origin'
-    }
-  ]
-  ```
-
-- [ ] **CORS 정책 검토**
+- [ ] Next.js Security Headers 추가 (`next.config.ts`)
+  - X-DNS-Prefetch-Control
+  - Strict-Transport-Security
+  - X-Frame-Options
+  - X-Content-Type-Options
+  - Referrer-Policy
 
 ---
 
@@ -113,34 +158,28 @@
 - [ ] **비디오 파일 최적화**
   - 현재: `seoul.mp4` (2.3MB), `hwasung.mp4` (9.1MB)
   - [ ] 비디오 압축 (H.264/H.265 코덱 사용)
-  - [ ] WebM 포맷 추가 (Safari는 MP4 폴백)
-  - [ ] 모바일에서는 비디오 비활성화 확인 (현재 768px 미만에서 비활성화됨)
+  - [ ] WebM 포맷 추가
+  - [ ] 모바일에서는 비디오 비활성화 확인
   - [ ] Lazy loading 적용 확인
 
 - [ ] **이미지 최적화**
   - 현재: `review1.jpg` (154KB), `review2.jpg` (135KB)
   - [ ] Next.js Image 컴포넌트로 전환 권장
   - [ ] WebP 포맷 변환
-  - [ ] 적절한 크기로 리사이징 (원본 너무 크면)
+  - [ ] 적절한 크기로 리사이징
 
 ### ✅ 번들 크기 최적화
-- [ ] **빌드 분석**
-  ```bash
-  npm install -D @next/bundle-analyzer
-  npm run build
-  ```
+- [ ] 빌드 분석 (`@next/bundle-analyzer`)
 - [ ] 불필요한 의존성 제거
-- [ ] Dynamic Import 사용 검토 (특히 Toss SDK)
+- [ ] Dynamic Import 사용 검토
 
 ### ✅ 캐싱 전략
-- [ ] **Static Assets 캐싱**
-  - Vercel은 자동으로 처리하지만 확인 필요
-- [ ] **API Route 캐싱 전략**
-  - `/api/orders` GET 요청 캐싱 고려
-- [ ] **CDN 설정** (Vercel Edge Network 활용)
+- [ ] Static Assets 캐싱
+- [ ] API Route 캐싱 전략
+- [ ] CDN 설정 (Vercel Edge Network 활용)
 
 ### ✅ 폰트 최적화
-- [x] Google Fonts Preconnect 설정됨 (`layout.tsx`)
+- [x] Google Fonts Preconnect 설정됨
 - [ ] 필요한 폰트 웨이트만 로드하는지 확인
 
 ---
@@ -148,66 +187,17 @@
 ## 4. SEO 및 검색 엔진 최적화
 
 ### ✅ 메타데이터
-- [x] 기본 메타데이터 설정됨 (`layout.tsx:15-41`)
-- [ ] **추가 최적화**
-  - [ ] Open Graph 이미지 추가 (`og:image`)
-  - [ ] Twitter Card 이미지 추가
-  - [ ] Canonical URL 설정
+- [x] 기본 메타데이터 설정됨
+- [ ] Open Graph 이미지 추가 (`og:image`)
+- [ ] Twitter Card 이미지 추가
+- [ ] Canonical URL 설정
 
 ### ✅ Sitemap 및 Robots.txt
-- [ ] **Sitemap 생성** (`app/sitemap.ts`)
-  ```typescript
-  export default function sitemap() {
-    return [
-      {
-        url: 'https://yourdomain.com',
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 1,
-      },
-      {
-        url: 'https://yourdomain.com/payment/success',
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.5,
-      }
-    ]
-  }
-  ```
-
-- [ ] **Robots.txt 생성** (`app/robots.ts`)
-  ```typescript
-  export default function robots() {
-    return {
-      rules: {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/payment/'],
-      },
-      sitemap: 'https://yourdomain.com/sitemap.xml',
-    }
-  }
-  ```
+- [ ] Sitemap 생성 (`app/sitemap.ts`)
+- [ ] Robots.txt 생성 (`app/robots.ts`)
 
 ### ✅ 구조화된 데이터 (Schema.org)
-- [ ] **JSON-LD 추가** (서비스 페이지)
-  ```json
-  {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "사주팔자 명리 분석",
-    "description": "정통 만세력 기반 사주 분석",
-    "provider": {
-      "@type": "Organization",
-      "name": "운명 명리 분석"
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "29900",
-      "priceCurrency": "KRW"
-    }
-  }
-  ```
+- [ ] JSON-LD 추가 (서비스 페이지)
 
 ### ✅ Google Search Console & Analytics
 - [ ] Google Search Console 등록
@@ -216,7 +206,7 @@
 - [ ] Google Analytics 설정 (GA4)
   - [ ] 추적 코드 설치
   - [ ] 전환 이벤트 설정 (결제 완료)
-- [ ] Naver Search Advisor 등록 (한국 시장)
+- [ ] Naver Search Advisor 등록
   - [ ] 사이트 소유권 확인
   - [ ] Sitemap 제출
 
@@ -259,11 +249,11 @@
 ### ✅ Supabase 프로덕션 설정
 - [ ] **데이터베이스 스키마 확인**
   - [x] `orders` 테이블 생성 확인
-  - [ ] 인덱스 최적화 (자주 쿼리하는 컬럼)
+  - [ ] 인덱스 최적화
   - [ ] 외래 키 제약 조건 확인
 
 - [ ] **백업 설정**
-  - [ ] 자동 백업 활성화 (Supabase 대시보드)
+  - [ ] 자동 백업 활성화
   - [ ] 백업 주기 설정 (일일 권장)
   - [ ] 수동 백업 테스트
 
@@ -272,11 +262,10 @@
   - [ ] Connection Pool 설정 확인
 
 ### ✅ 데이터 개인정보 보호
-- [ ] **GDPR/개인정보보호법 준수**
-  - [ ] 개인정보 수집 동의 명시
-  - [ ] 개인정보 처리방침 페이지 작성
-  - [ ] 데이터 보관 기간 명시
-  - [ ] 데이터 삭제 요청 프로세스 마련
+- [ ] 개인정보 수집 동의 명시
+- [ ] 개인정보 처리방침 페이지 작성
+- [ ] 데이터 보관 기간 명시
+- [ ] 데이터 삭제 요청 프로세스 마련
 
 ---
 
@@ -292,7 +281,7 @@
   - [ ] 알림 설정 (이메일, Slack)
 
 ### ✅ 성능 모니터링
-- [ ] **Vercel Analytics 활성화**
+- [ ] Vercel Analytics 활성화
   - [ ] Web Vitals 모니터링
   - [ ] 페이지 로딩 속도 추적
 
@@ -302,18 +291,17 @@
   - [ ] 패키지 선택 이벤트
   - [ ] 카카오톡 문의 클릭 이벤트
 
-- [ ] **UTM 파라미터 설정**
-  - 마케팅 캠페인 추적용
+- [ ] UTM 파라미터 설정 (마케팅 캠페인 추적용)
 
 ---
 
 ## 8. 법률 및 규정 준수
 
 ### ✅ 필수 약관 페이지
-- [ ] **이용약관 페이지** (`/terms`)
-- [ ] **개인정보 처리방침** (`/privacy`)
-- [ ] **환불 정책** (FAQ에 포함되어 있음, 별도 페이지 권장)
-- [ ] **사업자 정보** (Footer에 추가)
+- [ ] 이용약관 페이지 (`/terms`)
+- [ ] 개인정보 처리방침 (`/privacy`)
+- [ ] 환불 정책 (FAQ에 포함되어 있음, 별도 페이지 권장)
+- [ ] 사업자 정보 (Footer에 추가)
 
 ### ✅ 사업자 등록
 - [ ] 사업자등록증 발급
@@ -321,19 +309,18 @@
 - [ ] Toss Payments 정산 계좌 설정
 
 ### ✅ 쿠키 및 개인정보 동의
-- [ ] **쿠키 배너** (필요시)
-- [ ] **주문 시 개인정보 수집 동의 체크박스**
-  - 현재 `app/page.tsx`의 OrderModal에 추가 필요
+- [ ] 쿠키 배너 (필요시)
+- [ ] 주문 시 개인정보 수집 동의 체크박스
 
 ---
 
 ## 9. 콘텐츠 및 UX
 
 ### ✅ 콘텐츠 최종 검토
-- [ ] **오타 및 문법 검사**
-- [ ] **가격 및 패키지 정보 확인**
+- [ ] 오타 및 문법 검사
+- [ ] 가격 및 패키지 정보 확인
   - 현재: 신년운세 19,900원, 기본 9,800원, 프리미엄 29,900원
-- [ ] **연락처 정보 업데이트**
+- [ ] 연락처 정보 업데이트
   - 카카오톡 채널 링크 작동 확인
   - 이메일 주소 확인
 
@@ -356,9 +343,9 @@
   - [ ] 결제 성공/실패 시나리오
 
 ### ✅ 접근성 (Accessibility)
-- [ ] **ARIA 레이블 추가**
-- [ ] **키보드 네비게이션 테스트**
-- [ ] **스크린 리더 테스트** (선택사항)
+- [ ] ARIA 레이블 추가
+- [ ] 키보드 네비게이션 테스트
+- [ ] 스크린 리더 테스트 (선택사항)
 
 ---
 
@@ -386,10 +373,8 @@
   - [ ] PR 생성 시 미리보기 배포
 
 ### ✅ 성능 테스트
-- [ ] **로드 테스트**
-  - 동시 접속자 시뮬레이션
-- [ ] **Lighthouse 점수 확인**
-  - 목표: Performance 90+ 권장
+- [ ] 로드 테스트 (동시 접속자 시뮬레이션)
+- [ ] Lighthouse 점수 확인 (목표: Performance 90+)
 
 ---
 
@@ -416,13 +401,13 @@
   - [ ] 잔액 부족
 
 ### ✅ 보안 테스트
-- [ ] **SQL Injection 테스트** (Supabase는 자동 방어)
-- [ ] **XSS 테스트** (React는 자동 방어)
-- [ ] **CSRF 테스트**
+- [ ] SQL Injection 테스트 (Supabase는 자동 방어)
+- [ ] XSS 테스트 (React는 자동 방어)
+- [ ] CSRF 테스트
 
 ---
 
-## 12. 런칭 후 체크리스트
+## 12. 런칭 후 관리
 
 ### ✅ 첫 24시간
 - [ ] 에러 로그 모니터링
@@ -447,13 +432,14 @@
 ## 📊 우선순위별 분류
 
 ### 🔴 높음 (런칭 전 필수)
-1. Toss Payments 프로덕션 키 전환
-2. Supabase 환경 변수 설정
-3. 도메인 및 HTTPS 설정
-4. 사업자 정보 표시
-5. 이용약관 및 개인정보처리방침
-6. 결제 플로우 테스트
-7. 모바일 반응형 테스트
+1. ✅ 로컬 빌드 성공
+2. Toss Payments 프로덕션 키 전환
+3. Supabase 환경 변수 설정
+4. 도메인 및 HTTPS 설정
+5. 사업자 정보 표시
+6. 이용약관 및 개인정보처리방침
+7. 결제 플로우 테스트
+8. 모바일 반응형 테스트
 
 ### 🟡 중간 (런칭 직후 필요)
 1. Google Analytics 설치
@@ -472,12 +458,12 @@
 
 ---
 
-## 🚀 빠른 실행 가이드
+## 🚀 빠른 실행 타임라인
 
 ### 1단계: 환경 설정 (30분)
 ```bash
-# 1. 환경 변수 파일 생성
-cp .env.example .env.local  # .env.example이 없으면 직접 생성
+# 1. 로컬 빌드 테스트
+npm run build
 
 # 2. Vercel 배포
 vercel --prod
@@ -511,12 +497,36 @@ vercel --prod
 - [Next.js 배포 가이드](https://nextjs.org/docs/deployment)
 - [Vercel 문서](https://vercel.com/docs)
 
-### 추가 도움이 필요하면
+### 추가 도움
 - Toss Payments 고객센터: 1544-7772
 - Supabase Support: support@supabase.com
 - Vercel Support: support@vercel.com
 
 ---
 
-**마지막 업데이트:** 2026-01-11
-**작성자:** Claude Code Assistant
+## 📝 현재 상태 요약
+
+### ✅ 완료된 항목
+- 빌드 성공
+- 모든 페이지 정상 생성
+- API Routes 설정 완료
+- Supabase 연동 완료
+- 결제 시스템 연동 완료
+- vercel.json 설정 완료
+
+### ⚠️ 배포 전 필수 작업
+1. Vercel에 환경 변수 설정
+2. 프로덕션 키로 변경 (테스트 키 → 실제 키)
+3. 배포 후 URL 확인 및 업데이트
+4. 필수 약관 페이지 추가
+5. 사업자 정보 등록
+
+---
+
+**프로젝트**: 운명테라피 사주 분석 웹사이트
+**기술 스택**: Next.js 16.1.1, React 19, TypeScript, Tailwind CSS
+**배포**: Vercel
+**결제**: 토스페이먼츠
+**DB**: Supabase
+
+**마지막 업데이트**: 2026-01-13

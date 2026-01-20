@@ -4,22 +4,34 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface PersonData {
+  name: string;
+  birthDate: string;
+  calendarType: string;
+  birthTime: string;
+  gender: string;
+  email: string;
+}
+
 export default function PaymentSuccessClient() {
   const searchParams = useSearchParams();
   const [isConfirming, setIsConfirming] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // URL 파라미터에서 정보 추출
   const orderId = searchParams.get('orderId');
   const amount = searchParams.get('amount');
   const paymentKey = searchParams.get('paymentKey');
-  const customerName = searchParams.get('name');
-  const customerEmail = searchParams.get('email');
   const packageName = searchParams.get('package');
-  const birthDate = searchParams.get('birthDate');
-  const calendarType = searchParams.get('calendarType');
-  const birthTime = searchParams.get('birthTime');
-  const gender = searchParams.get('gender');
+  const personCountStr = searchParams.get('personCount');
+  const personsDataStr = searchParams.get('personsData');
+
+  // 다인 분석 데이터 파싱
+  const personCount = personCountStr ? parseInt(personCountStr) : 1;
+  const personsData: PersonData[] = personsDataStr ? JSON.parse(decodeURIComponent(personsDataStr)) : [];
+
+  // 첫 번째 사람 정보 (표시용)
+  const firstPerson = personsData[0] || {};
 
   useEffect(() => {
     const confirmPayment = async () => {
@@ -40,13 +52,13 @@ export default function PaymentSuccessClient() {
             orderId,
             amount,
             paymentKey,
-            customerName,
-            customerEmail,
+            customerName: firstPerson.name,
+            customerEmail: firstPerson.email,
             packageName,
-            birthDate,
-            calendarType,
-            birthTime,
-            gender,
+            birthDate: firstPerson.birthDate,
+            calendarType: firstPerson.calendarType,
+            birthTime: firstPerson.birthTime,
+            gender: firstPerson.gender,
           }),
         });
 
@@ -55,6 +67,15 @@ export default function PaymentSuccessClient() {
         if (!response.ok) {
           throw new Error(data.message || '결제 승인에 실패했습니다.');
         }
+
+        // 결제 승인 성공 후 구글 시트로 데이터 전송
+        await sendToGoogleSheet({
+          orderId,
+          packageName: packageName || '',
+          amount: parseInt(amount || '0'),
+          personCount,
+          personsData,
+        });
 
         // 성공
         setIsConfirming(false);
@@ -66,14 +87,51 @@ export default function PaymentSuccessClient() {
     };
 
     confirmPayment();
-  }, [orderId, amount, paymentKey, customerName, customerEmail, packageName, birthDate, calendarType, birthTime, gender]);
+  }, [orderId, amount, paymentKey, packageName, personCount, personsData, firstPerson.name, firstPerson.email, firstPerson.birthDate, firstPerson.calendarType, firstPerson.birthTime, firstPerson.gender]);
+
+  // 구글 시트로 데이터 전송
+  const sendToGoogleSheet = async (orderData: {
+    orderId: string;
+    packageName: string;
+    amount: number;
+    personCount: number;
+    personsData: PersonData[];
+  }) => {
+    const googleSheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL;
+
+    if (!googleSheetUrl) {
+      console.warn('구글 시트 URL이 설정되지 않았습니다.');
+      return;
+    }
+
+    try {
+      const response = await fetch(googleSheetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('구글 시트 저장 성공');
+      } else {
+        console.error('구글 시트 저장 실패:', result.message);
+      }
+    } catch (err) {
+      console.error('구글 시트 전송 오류:', err);
+      // 구글 시트 전송 실패해도 사용자에게는 성공 메시지 표시 (결제는 완료됨)
+    }
+  };
 
   if (isConfirming) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#07080b] text-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#d4af37] mx-auto mb-6"></div>
-          <p className="text-2xl md:text-3xl text-white/80">결제를 확인하고 있습니다...</p>
+          <p className="text-xl text-white/80">결제를 확인하고 있습니다...</p>
         </div>
       </div>
     );
@@ -84,11 +142,11 @@ export default function PaymentSuccessClient() {
       <div className="min-h-screen flex items-center justify-center bg-[#07080b] text-white p-4">
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-6">❌</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">결제 승인 실패</h1>
-          <p className="text-lg md:text-xl text-white/70 mb-8">{error}</p>
+          <h1 className="text-3xl font-bold mb-4">결제 승인 실패</h1>
+          <p className="text-white/70 mb-8">{error}</p>
           <Link
             href="/"
-            className="inline-block px-6 py-4 bg-white/10 text-white rounded-xl font-semibold text-lg md:text-xl hover:bg-white/20 transition-all"
+            className="inline-block px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all"
           >
             홈으로 돌아가기
           </Link>
@@ -99,13 +157,13 @@ export default function PaymentSuccessClient() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#07080b] text-white p-4">
-      <div className="max-w-md w-full text-center">
+      <div className="max-w-2xl w-full text-center">
         <div className="text-6xl mb-6">✅</div>
         <h1 className="text-3xl md:text-4xl font-bold mb-4">결제가 완료되었습니다!</h1>
-        
+
         <div className="my-8 p-6 rounded-2xl bg-white/5 border border-white/10 text-left">
-          <h2 className="text-xl md:text-2xl font-semibold text-[#d4af37] mb-4">주문 정보</h2>
-          <div className="space-y-2 text-base md:text-lg text-white/80">
+          <h2 className="text-lg font-semibold text-[#d4af37] mb-4">주문 정보</h2>
+          <div className="space-y-2 text-sm text-white/80 mb-4">
             <div className="flex justify-between">
               <span>상품명:</span>
               <span className="font-semibold text-white">{packageName}</span>
@@ -115,67 +173,72 @@ export default function PaymentSuccessClient() {
               <span className="font-semibold text-white">{parseInt(amount || '0').toLocaleString()}원</span>
             </div>
             <div className="flex justify-between">
-              <span>이름:</span>
-              <span className="font-semibold text-white">{customerName}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>생년월일:</span>
-              <span className="font-semibold text-white">{birthDate}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>양/음력:</span>
-              <span className="font-semibold text-white">
-                {calendarType === 'solar' ? '양력' : calendarType === 'lunar' ? '음력' : calendarType === 'leap' ? '윤달' : '-'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>생시:</span>
-              <span className="font-semibold text-white">{birthTime === 'unknown' ? '모름' : birthTime}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>성별:</span>
-              <span className="font-semibold text-white">{gender === 'male' ? '남성' : '여성'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>이메일:</span>
-              <span className="font-semibold text-white">{customerEmail}</span>
+              <span>분석 인원:</span>
+              <span className="font-semibold text-white">{personCount}인</span>
             </div>
           </div>
-        </div>
 
-        {/* PDF 전송 안내 - 강조된 박스 */}
-        <div className="mb-8 p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#d4af37]/20 via-[#d4af37]/10 to-transparent border-2 border-[#d4af37]/30 shadow-lg shadow-[#d4af37]/20">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#d4af37] flex items-center justify-center">
-              <svg className="w-6 h-6 md:w-8 md:h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <div className="flex-1 text-left">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                📧 PDF 리포트 전송 안내
+          {/* 분석 대상자 정보 */}
+          {personsData.map((person, index) => (
+            <div key={index} className="mt-4 pt-4 border-t border-white/10">
+              <h3 className="text-sm font-semibold text-[#d4af37] mb-3">
+                {personCount > 1 ? `${index + 1}번째 분석 대상자` : '분석 대상자'}
               </h3>
-              <div className="space-y-2 text-lg md:text-xl text-white/90 leading-relaxed">
-                <p>
-                  입력하신 <span className="font-bold text-[#d4af37]">{customerEmail}</span>로
-                </p>
-                <p className="text-2xl md:text-3xl font-bold text-white">
-                  <span className="text-[#d4af37]">24시간 이내</span>에
-                </p>
-                <p className="text-xl md:text-2xl font-semibold text-white">
-                  평생 소장할 수 있는 PDF 파일이 전송됩니다
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-white/20">
-                <p className="text-base md:text-lg text-white/70">
-                  💡 PDF 파일은 이메일로 발송되며, 다운로드 후 평생 보관하실 수 있습니다.
-                </p>
+              <div className="space-y-2 text-sm text-white/80">
+                <div className="flex justify-between">
+                  <span>이름:</span>
+                  <span className="font-semibold text-white">{person.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>생년월일:</span>
+                  <span className="font-semibold text-white">{person.birthDate}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>양/음력:</span>
+                  <span className="font-semibold text-white">
+                    {person.calendarType === 'solar'
+                      ? '양력'
+                      : person.calendarType === 'lunar'
+                      ? '음력'
+                      : person.calendarType === 'leap'
+                      ? '윤달'
+                      : '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>생시:</span>
+                  <span className="font-semibold text-white">
+                    {person.birthTime === 'unknown' ? '모름' : person.birthTime}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>성별:</span>
+                  <span className="font-semibold text-white">
+                    {person.gender === 'male' ? '남성' : '여성'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>이메일:</span>
+                  <span className="font-semibold text-white">{person.email}</span>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
 
-        <p className="text-white/60 mb-8 text-base md:text-lg leading-relaxed">
+        <p className="text-white/70 mb-8 leading-relaxed">
+          입력하신 <span className="font-semibold text-[#d4af37]">{firstPerson.email}</span>로<br />
+          <span className="font-semibold text-white">24~48시간 내</span>에 PDF 리포트를 발송해드립니다.
+          <br />
+          <br />
+          {personCount > 1 && (
+            <>
+              <span className="font-semibold text-[#d4af37]">궁합 분석</span>도 함께
+              제공됩니다.
+              <br />
+              <br />
+            </>
+          )}
           추가 문의사항은 카카오톡 채널로 연락주세요.
         </p>
 
@@ -183,13 +246,13 @@ export default function PaymentSuccessClient() {
           <Link
             href="http://pf.kakao.com/_fECQn"
             target="_blank"
-            className="w-full px-6 py-4 bg-[#FEE500] text-[#3C1E1E] rounded-xl font-semibold text-lg md:text-xl hover:opacity-90 transition-all"
+            className="w-full px-6 py-3 bg-[#FEE500] text-[#3C1E1E] rounded-xl font-semibold hover:opacity-90 transition-all"
           >
             카카오톡 문의하기
           </Link>
           <Link
             href="/"
-            className="w-full px-6 py-4 bg-white/10 text-white rounded-xl font-semibold text-lg md:text-xl hover:bg-white/20 transition-all"
+            className="w-full px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all"
           >
             홈으로 돌아가기
           </Link>
