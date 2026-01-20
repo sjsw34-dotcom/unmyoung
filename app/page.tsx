@@ -456,16 +456,10 @@ function OrderModal({
             </button>
 
             {/* 안내 문구 */}
-            <p className="text-center text-sm text-gray-500">
-              버튼을 누르면 카카오톡으로 제공받을 PDF를 발송해드립니다.
+            <p className="text-center text-sm text-gray-500 mt-4">
+              버튼을 누르면 결제 페이지로 이동합니다.
               <br />
-              입력하신 정보를 복사해 복사해서 사전에 신청해주세요.
-            </p>
-
-            <p className="text-center text-xs text-gray-500">
-              버튼을 누르면 카카오톡 채널로 이동합니다.
-              <br />
-              입력하신 정보를 복사해서 전달해주세요.
+              결제 완료 후 입력하신 이메일로 <br className="sm:hidden" />PDF를 발송해드립니다.
             </p>
           </form>
         </div>
@@ -543,9 +537,9 @@ export default function Page() {
           >
           <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm md:text-base text-white/80 animate-pulse">
-                <span className="text-[#d4af37]">●</span> 
-                <span className="hidden sm:inline">만세력 기반 정통 명리 분석 · PDF 평생 소장</span>
-                <span className="sm:hidden">정통 명리 분석 · PDF 소장</span>
+                <span className="text-[#d4af37]">●</span>
+                <span className="hidden md:inline">만세력 기반 정통 명리 분석 · PDF 평생 소장</span>
+                <span className="md:hidden">정통 명리 분석 · PDF 평생 소장</span>
             </div>
 
               <h1 className="mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.15]">
@@ -572,17 +566,17 @@ export default function Page() {
             </div>
 
               <p className="mt-4 text-sm md:text-base text-white/50">
-              새벽 문의도 괜찮습니다. 편하실 때 메시지 주세요.
+              새벽 문의도 괜찮습니다. <br className="sm:hidden" />편하실 때 메시지 주세요.
             </p>
           </div>
 
           {/* Trust card */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-white/20 hover:bg-white/10 transition-all duration-300">
               <div className="text-lg font-semibold text-white/90">상담자 이력</div>
-              <ul className="mt-3 space-y-2 text-lg text-white/70">
+              <ul className="mt-3 space-y-2 text-base md:text-lg text-white/70">
               <li>· 사주팔자 명리심리상담사 1급</li>
               <li>· 가족심리상담사 1급</li>
-              <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
+              <li>· 신점이 아닌 <br className="sm:hidden" />만세력 기반 정통 명리 분석</li>
             </ul>
             </div>
           </div>
@@ -622,7 +616,7 @@ export default function Page() {
                 실제 상담 사례
               </div>
               <h3 className="mt-2 text-4xl md:text-5xl font-bold tracking-tight text-white">
-                이런 고민, 혹시 당신도 있으신가요?
+                이런 고민, <br className="sm:hidden" />혹시 당신도 있으신가요?
               </h3>
             </div>
 
@@ -635,19 +629,19 @@ export default function Page() {
               {[
                 {
                   question: "연애/결혼",
-                  text: "지금 만나는 사람과 결혼해도 괜찮을까?\n언제쯤 좋은 인연이 올까?",
+                  text: "지금 만나는 사람과 결혼해도 괜찮을까? 언제쯤 좋은 인연이 올까?",
                 },
                 {
                   question: "돈/재물",
-                  text: "언제쯤 돈이 들어올까?\n지금 투자해도 될까, 아니면 더 기다려야 할까?",
+                  text: "언제쯤 돈이 들어올까? 지금 투자해도 될까, 아니면 더 기다려야 할까?",
                 },
                 {
                   question: "일/커리어",
-                  text: "지금 직장을 그만두고 새로운 도전을 해도 될까?\n내게 맞는 일은 뭘까?",
+                  text: "지금 직장을 그만두고 새로운 도전을 해도 될까? 내게 맞는 일은 뭘까?",
                 },
                 {
                   question: "건강/관계",
-                  text: "가족 관계가 자꾸 꼬인다.\n건강도 신경 쓰이고, 언제쯤 좋아질까?",
+                  text: "가족 관계가 자꾸 꼬인다. 건강도 신경 쓰이고, 언제쯤 좋아질까?",
                 },
               ].map((item, i) => (
                 <div
@@ -718,7 +712,14 @@ export default function Page() {
 
       {/* Packages */}
       <section id="packages" className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
-        <SectionTitle eyebrow="상품 구성" title="당신에게 맞는 분석을 선택하세요" />
+        <div className="text-center">
+          <div className="text-sm font-semibold uppercase tracking-wider text-[#d4af37]">
+            상품 구성
+          </div>
+          <h2 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight text-white">
+            당신에게 맞는 <br className="sm:hidden" />분석을 선택하세요
+          </h2>
+        </div>
 
         <div
           ref={packagesRef}
@@ -795,13 +796,13 @@ export default function Page() {
       <section className="mx-auto max-w-5xl px-4 py-14 border-t border-white/10">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-8 text-white">
-            혹시 이런 생각 하고 계신가요?
+            혹시 이런 생각 <br className="sm:hidden" />하고 계신가요?
           </h2>
 
           <div className="space-y-4 mb-8">
             <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
               <p className="text-lg md:text-xl text-white/90 italic">
-                "나중에 해도 되지 않을까?"
+                "나중에 해도 <br className="sm:hidden" />되지 않을까?"
               </p>
             </div>
             <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
@@ -820,10 +821,10 @@ export default function Page() {
           <div className="border-t border-white/20 my-10"></div>
 
           <div className="mt-10 p-6 rounded-2xl bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 border border-[#d4af37]/20 mb-8">
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-3">
               <span className="text-2xl">⏰</span>
               <p className="text-lg md:text-xl text-white/90 font-semibold">
-                10자리 남음
+                <span className="text-[#d4af37]">10자리</span> 남음
               </p>
             </div>
         </div>
@@ -925,7 +926,7 @@ export default function Page() {
           </div>
 
             <p className="mt-6 text-sm text-white/60">
-              24시간 내 답변 · PDF 평생 소장 · 2026년 신년 특별가
+              24시간 내 답변 · <br className="sm:hidden" />PDF 평생 소장 · <br className="sm:hidden" />2026년 신년 특별가
           </p>
           </div>
         </div>
