@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
     img-src 'self' data: https:;
     font-src 'self' data:;
     media-src 'self' data:;
-    connect-src 'self' https://api.tosspayments.com https://*.supabase.co;
+    connect-src 'self' https://api.tosspayments.com https://log.tosspayments.com https://*.supabase.co;
     frame-src 'self' https://js.tosspayments.com;
     object-src 'none';
     base-uri 'self';
