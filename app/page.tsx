@@ -143,7 +143,7 @@ const packages = [
   },
   {
     name: "프리미엄 종합 분석",
-    price: "29,900원",
+    price: "39,000원",
     badge: "100페이지+",
     desc: "인생 전체 흐름을 한 번에\n정리하고 싶은 분",
     points: [
@@ -512,13 +512,13 @@ export default function Page() {
       <div className="sticky top-0 z-40 border-b border-[#d4af37]/30 bg-gradient-to-r from-[#1a1410] via-[#0f0d0a] to-[#1a1410] backdrop-blur">
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-center">
           <div className="text-center">
-            <span className="font-bold text-base md:text-lg text-[#d4af37]">50명 한정 29,900원</span>
+            <span className="font-bold text-base md:text-lg text-[#d4af37]">50명 한정 39,000원</span>
             <span className="text-white/40 mx-2 hidden sm:inline">·</span>
             <br className="sm:hidden" />
             <span className="text-sm md:text-base text-white/70">40명 마감 / 10명 남음</span>
             <span className="text-white/40 mx-2 hidden sm:inline">·</span>
             <br className="sm:hidden" />
-            <span className="text-sm md:text-base text-white/60">마감 후 정가 49,800원</span>
+            <span className="text-sm md:text-base text-white/60">마감 후 정가 99,000원</span>
           </div>
         </div>
       </div>
@@ -576,7 +576,7 @@ export default function Page() {
               <ul className="mt-3 space-y-2 text-base md:text-lg text-white/70">
               <li>· 사주팔자 명리심리상담사 1급</li>
               <li>· 가족심리상담사 1급</li>
-              <li>· 신점이 아닌 <br className="sm:hidden" />만세력 기반 정통 명리 분석</li>
+              <li>· 신점이 아닌 만세력 기반 정통 명리 분석</li>
             </ul>
             </div>
           </div>
@@ -907,13 +907,13 @@ export default function Page() {
             </h2>
 
             <p className="mt-6 text-lg md:text-xl text-white/80">
-              <span className="text-[#d4af37] font-semibold">50명 한정 29,900원</span>
+              <span className="text-[#d4af37] font-semibold">50명 한정 39,000원</span>
               <br className="sm:hidden" />
               <span className="sm:hidden"> </span>
               <span className="text-white/70">· 10명 남음 ·</span>
               <br className="sm:hidden" />
               <span className="sm:hidden"> </span>
-              <span className="text-white/60">마감 후 정가 49,800원</span>
+              <span className="text-white/60">마감 후 정가 99,000원</span>
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
