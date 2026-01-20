@@ -322,9 +322,16 @@ function OrderModal({
           <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
             <div className="flex items-center justify-between">
               <span className="text-gray-700 text-base">총 결제 금액</span>
-              <span className="text-3xl md:text-4xl font-bold text-blue-600">
-                {pkg.price}
-              </span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="text-3xl md:text-4xl font-bold text-blue-600">
+                  {pkg.price}
+                </span>
+                {pkg.highlight && (
+                  <span className="text-sm text-gray-400 line-through">
+                    99,000원
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
