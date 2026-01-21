@@ -525,16 +525,33 @@ export default function Page() {
       {/* Top Notice */}
       {/* 원래 배경색: bg-[#07080b]/90 -> bg-[#15131a]/90 -> bg-[#121212]/90 */}
       <div className="sticky top-0 z-40 border-b border-white/10 bg-[#121212]/90 backdrop-blur safe-top">
-        <div className="mx-auto max-w-5xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-center">
-          <div className="text-xs sm:text-sm text-white/80 text-center">
-            <span className="font-semibold text-base sm:text-lg text-white">50명 한정 29,900원</span>
-            <span className="hidden sm:inline">{" "}</span>
-            <span className="block sm:inline text-base sm:text-lg text-white/60">
-              <span className="hidden sm:inline">· </span>
-              <span className="sm:hidden"><br /></span>
-              40명 마감 / 10명 남음
-              <span className="hidden md:inline"> · 마감 후 정가 49,800원</span>
-            </span>
+        <div className="mx-auto max-w-5xl px-3 sm:px-4 py-2.5 sm:py-3">
+          <div className="flex items-center justify-between">
+            {/* 좌측: 로고/홈 */}
+            <Link
+              href="/"
+              className="text-base sm:text-lg font-bold text-[#d4af37] hover:opacity-80 transition-opacity"
+            >
+              운명테라피
+            </Link>
+
+            {/* 중앙: 프로모션 */}
+            <div className="text-xs sm:text-sm text-white/80 text-center flex-1 mx-4">
+              <span className="font-semibold text-sm sm:text-base text-white">50명 한정 29,900원</span>
+              <span className="hidden sm:inline">{" "}</span>
+              <span className="hidden sm:inline text-sm sm:text-base text-white/60">
+                · 40명 마감 / 10명 남음
+                <span className="hidden md:inline"> · 마감 후 정가 49,800원</span>
+              </span>
+            </div>
+
+            {/* 우측: 블로그 링크 */}
+            <Link
+              href="/blog"
+              className="text-sm sm:text-base text-white/70 hover:text-[#d4af37] transition-colors font-medium"
+            >
+              블로그
+            </Link>
           </div>
         </div>
       </div>
@@ -907,6 +924,60 @@ export default function Page() {
         </div>
       </section>
 
+      {/* Blog Preview Section */}
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-14 border-t border-white/10">
+        <div className="text-center mb-8 sm:mb-10">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#d4af37]/30 bg-[#d4af37]/10 px-4 py-2 text-sm text-[#d4af37] mb-4">
+            <span>📚</span>
+            <span>사주 지식 나눔</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-white px-2">
+            사주명리학, 이제 <span className="text-[#d4af37]">직접 배워보세요</span>
+          </h2>
+          <p className="mt-4 text-base sm:text-lg text-white/75 max-w-2xl mx-auto">
+            초보자도 쉽게 이해할 수 있는 사주명리학 입문 가이드를 블로그에서 만나보세요.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:gap-5 md:grid-cols-3">
+          {[
+            {
+              icon: "🎯",
+              title: "사주 기초",
+              desc: "사주팔자의 기본 개념과 구조 이해하기"
+            },
+            {
+              icon: "🌿",
+              title: "오행과 십성",
+              desc: "목화토금수와 십성으로 나를 파악하기"
+            },
+            {
+              icon: "⏰",
+              title: "대운과 세운",
+              desc: "인생의 타이밍을 읽는 법 배우기"
+            }
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 hover:border-[#d4af37]/50 hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
+              <div className="text-3xl sm:text-4xl mb-3">{item.icon}</div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{item.title}</h3>
+              <p className="text-sm sm:text-base text-white/70">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 sm:mt-10 text-center">
+          <Link
+            href="/blog"
+            className="inline-block rounded-xl border border-[#d4af37]/30 bg-[#d4af37]/10 px-6 sm:px-8 py-3.5 sm:py-4 text-base sm:text-lg font-semibold text-[#d4af37] hover:bg-[#d4af37]/20 hover:scale-105 transition-all"
+          >
+            블로그 글 읽으러 가기 →
+          </Link>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="relative overflow-hidden">
         {/* 영상 배경 */}
@@ -952,9 +1023,28 @@ export default function Page() {
       {/* Footer */}
       {/* 원래 배경색: bg-[#0f1014] -> bg-[#15131a] -> bg-[#121212] 딥 차콜 톤 (약간 밝게: #131313) */}
       <footer className="border-t border-white/10 bg-[#131313] px-4 sm:px-6 lg:px-8 py-6 sm:py-8 safe-bottom">
-        <div className="mx-auto max-w-5xl text-center text-xs sm:text-sm text-white/50">
-          <p>© 2026 운명테라피. 정통 명리 기반 사주 분석 서비스.</p>
-          <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
+        <div className="mx-auto max-w-5xl">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+            <div className="text-center sm:text-left">
+              <p className="text-sm sm:text-base text-white/70 font-semibold">운명테라피</p>
+              <p className="text-xs sm:text-sm text-white/50 mt-1">정통 명리 기반 사주 분석 서비스</p>
+            </div>
+            <div className="flex gap-4 sm:gap-6 text-xs sm:text-sm">
+              <Link href="/" className="text-white/50 hover:text-[#d4af37] transition-colors">
+                홈
+              </Link>
+              <Link href="/blog" className="text-white/50 hover:text-[#d4af37] transition-colors">
+                블로그
+              </Link>
+              <Link href={CHAT_URL} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#d4af37] transition-colors">
+                문의
+              </Link>
+            </div>
+          </div>
+          <div className="text-center text-xs sm:text-sm text-white/50 pt-4 border-t border-white/10">
+            <p>© 2026 운명테라피. All rights reserved.</p>
+            <p className="mt-2">문의: 카카오톡 채널 · 24시간 답변</p>
+          </div>
         </div>
       </footer>
 

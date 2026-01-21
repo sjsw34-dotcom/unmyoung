@@ -4,6 +4,18 @@ const nextConfig: NextConfig = {
   /* config options here */
   // output: 'standalone', // 필요시 주석 해제
 
+  // 외부 이미지 호스트 설정
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+
   // 보안 헤더 설정
   async headers() {
     return [
