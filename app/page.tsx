@@ -156,9 +156,16 @@ const packages = [
   },
   {
     name: "프리미엄 종합 분석",
-    price: "29,900원",
+    price: "39,000원",
+    originalPrice: "99,000원",
     badge: "100페이지+",
     desc: "인생 전체 흐름을 한 번에\n정리하고 싶은 분",
+    pricing: [
+      { people: 1, price: 39000, originalPrice: 99000, discount: 60 },
+      { people: 2, price: 70000, originalPrice: 198000, discount: 65 },
+      { people: 3, price: 100000, originalPrice: 297000, discount: 66 },
+      { people: 4, price: 125000, originalPrice: 396000, discount: 68 },
+    ],
     points: [
       { text: "인생 전반 상승·하강 흐름", included: true },
       { text: "연애운·결혼운", included: true },
@@ -537,11 +544,11 @@ export default function Page() {
 
             {/* 중앙: 프로모션 */}
             <div className="text-xs sm:text-sm text-white/80 text-center flex-1 mx-4">
-              <span className="font-semibold text-sm sm:text-base text-white">50명 한정 29,900원</span>
+              <span className="font-semibold text-sm sm:text-base text-white">50명 한정 39,000원</span>
               <span className="hidden sm:inline">{" "}</span>
               <span className="hidden sm:inline text-sm sm:text-base text-white/60">
                 · 40명 마감 / 10명 남음
-                <span className="hidden md:inline"> · 마감 후 정가 49,800원</span>
+                <span className="hidden md:inline"> · 마감 후 정가 99,000원</span>
               </span>
             </div>
 
@@ -811,9 +818,19 @@ export default function Page() {
               </ul>
 
               <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <span className={`text-xl sm:text-2xl font-bold text-center sm:text-left ${pkg.highlight ? 'text-[#d4af37]' : 'text-white'}`}>
-                  {pkg.price}
-                </span>
+                <div className="text-center sm:text-left">
+                  {pkg.originalPrice && (
+                    <div className="text-sm text-white/40 line-through mb-1">
+                      {pkg.originalPrice}
+                    </div>
+                  )}
+                  <span className={`text-xl sm:text-2xl font-bold ${pkg.highlight ? 'text-[#d4af37]' : 'text-white'}`}>
+                    {pkg.price}
+                  </span>
+                  {pkg.originalPrice && (
+                    <span className="ml-2 text-sm font-semibold text-[#d4af37]">60% OFF</span>
+                  )}
+                </div>
                 <button className={`flex-1 rounded-xl py-3 sm:py-3.5 text-sm sm:text-base font-semibold transition-all group-hover:scale-105 touch-manipulation min-h-[48px] flex items-center justify-center ${
                   pkg.highlight
                     ? "bg-[#d4af37] text-black hover:opacity-90"
@@ -998,10 +1015,10 @@ export default function Page() {
             </h2>
 
             <p className="mt-5 sm:mt-6 text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 px-2">
-              50명 한정 29,900원 · 10명 남음
+              50명 한정 39,000원 · 10명 남음
               <br className="sm:hidden" />
               <span className="hidden sm:inline"> · </span>
-              마감 후 정가 49,800원
+              마감 후 정가 99,000원
             </p>
 
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">

@@ -9,10 +9,12 @@ import Link from "next/link";
 interface Package {
   name: string;
   price: string;
+  originalPrice?: string;
   badge: string;
   desc: string;
   points: { text: string; included: boolean }[];
   highlight?: boolean;
+  pricing?: { people: number; price: number; originalPrice: number; discount: number }[];
 }
 
 // 에러 타입 정의
@@ -23,6 +25,7 @@ interface FormErrors {
   birthTime?: string;
   gender?: string;
   email?: string;
+  numberOfPeople?: string;
   agreements?: string;
 }
 
@@ -52,6 +55,7 @@ export function OrderModal({
     birthTime: "", // 생시
     gender: "",
     email: "",
+    numberOfPeople: pkg.pricing ? "1" : "", // 프리미엄 패키지의 경우 기본 1인
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -137,6 +141,11 @@ export function OrderModal({
       newErrors.email = "올바른 이메일 형식을 입력해주세요.";
     }
 
+    // 프리미엄 패키지의 경우 인원 선택 필수
+    if (pkg.pricing && !formData.numberOfPeople) {
+      newErrors.numberOfPeople = "분석 인원을 선택해주세요.";
+    }
+
     // 필수 동의 항목 체크
     if (!agreements.privacy || !agreements.thirdParty || !agreements.terms) {
       newErrors.agreements = "필수 동의 항목에 모두 동의해주세요.";
@@ -169,11 +178,17 @@ export function OrderModal({
       // 주문 ID 생성 (고유값)
       const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-      // 금액 추출 (쉼표와 '원' 제거)
-      const amount = parseInt(pkg.price.replace(/,|원/g, ""));
+      // 금액 계산 (프리미엄 패키지의 경우 선택한 인원에 따라)
+      let amount: number;
+      if (pkg.pricing && formData.numberOfPeople) {
+        const selectedPricing = pkg.pricing.find(p => p.people.toString() === formData.numberOfPeople);
+        amount = selectedPricing ? selectedPricing.price : parseInt(pkg.price.replace(/,|원/g, ""));
+      } else {
+        amount = parseInt(pkg.price.replace(/,|원/g, ""));
+      }
 
-      // 현재는 1인 기준으로만 저장
-      const personCount = 1;
+      // 인원 수 설정
+      const personCount = pkg.pricing && formData.numberOfPeople ? parseInt(formData.numberOfPeople) : 1;
       const personsData = [
         {
           name: formData.name,
@@ -278,13 +293,59 @@ export function OrderModal({
             </ul>
           </div>
 
+          {/* 인원별 가격표 (프리미엄 패키지만 표시) */}
+          {pkg.pricing && (
+            <div className="mb-6 p-5 rounded-2xl bg-gray-50 border border-gray-200">
+              <h4 className="font-semibold text-gray-900 mb-3 text-lg md:text-xl">💰 인원별 할인 가격</h4>
+              <div className="space-y-2">
+                {pkg.pricing.map((priceInfo) => (
+                  <div
+                    key={priceInfo.people}
+                    className={`p-3 rounded-xl border-2 transition-all ${
+                      formData.numberOfPeople === priceInfo.people.toString()
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold text-gray-900">{priceInfo.people}인</span>
+                        <span className="text-sm text-gray-500 line-through">
+                          {priceInfo.originalPrice.toLocaleString()}원
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-bold">
+                          {priceInfo.discount}% OFF
+                        </span>
+                      </div>
+                      <span className="text-xl font-bold text-blue-600">
+                        {priceInfo.price.toLocaleString()}원
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 결제 금액 */}
           <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 text-lg md:text-xl">총 결제 금액</span>
-              <span className="text-4xl md:text-5xl font-bold text-blue-600">
-                {pkg.price}
-              </span>
+              <div>
+                <span className="text-gray-700 text-lg md:text-xl block">총 결제 금액</span>
+                {pkg.originalPrice && (
+                  <span className="text-sm text-gray-500 line-through">{pkg.originalPrice}</span>
+                )}
+              </div>
+              <div className="text-right">
+                <span className="text-4xl md:text-5xl font-bold text-blue-600 block">
+                  {pkg.pricing && formData.numberOfPeople
+                    ? pkg.pricing.find(p => p.people.toString() === formData.numberOfPeople)?.price.toLocaleString() + '원'
+                    : pkg.price}
+                </span>
+                {pkg.originalPrice && (
+                  <span className="text-sm font-semibold text-red-600">60% 할인</span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -319,6 +380,40 @@ export function OrderModal({
                     </p>
                   )}
                 </div>
+
+                {/* 인원 선택 (프리미엄 패키지만 표시) */}
+                {pkg.pricing && (
+                  <div>
+                    <label htmlFor="numberOfPeople" className="block text-lg md:text-xl font-medium text-gray-700 mb-2">
+                      분석 인원 *
+                    </label>
+                    <select
+                      id="numberOfPeople"
+                      name="numberOfPeople"
+                      required
+                      value={formData.numberOfPeople}
+                      onChange={handleInputChange}
+                      aria-label="분석 인원 선택"
+                      aria-invalid={!!errors.numberOfPeople}
+                      aria-describedby={errors.numberOfPeople ? "numberOfPeople-error" : undefined}
+                      className={`w-full px-4 py-3 rounded-xl bg-white border text-gray-900 text-lg md:text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer ${
+                        errors.numberOfPeople ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">선택하세요</option>
+                      {pkg.pricing.map((priceInfo) => (
+                        <option key={priceInfo.people} value={priceInfo.people}>
+                          {priceInfo.people}인 - {priceInfo.price.toLocaleString()}원 ({priceInfo.discount}% 할인)
+                        </option>
+                      ))}
+                    </select>
+                    {errors.numberOfPeople && (
+                      <p id="numberOfPeople-error" className="mt-1 text-sm text-red-500" role="alert">
+                        {errors.numberOfPeople}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
